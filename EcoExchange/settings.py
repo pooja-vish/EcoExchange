@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'coins',
     'user_details.apps.UserDetailsConfig',
-    'phonenumber_field'
+    'phonenumber_field',
+    'reviews'
 ]
 
 MIDDLEWARE = [
