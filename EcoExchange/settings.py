@@ -41,9 +41,14 @@ INSTALLED_APPS = [
     'coins',
     'user_details.apps.UserDetailsConfig',
     'phonenumber_field',
+<<<<<<< HEAD
     'product.apps.ProductConfig',
 
 
+=======
+    'reviews',
+    'order.apps.OrderConfig'
+>>>>>>> d0bae3300e9aa6f0d8a55151453e0514c5c5118f
 ]
 
 MIDDLEWARE = [
