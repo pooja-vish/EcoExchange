@@ -311,6 +311,12 @@
     border-radius: 10px 10px 0 0;
 }
 
+.image-container {
+    width: 200px; /* Fixed width of the container */
+    height: 200px; /* Fixed height of the container */
+    overflow: hidden; /* Ensure image does not overflow */
+}
+>>>>>>> main
 .fruite .fruite-item .fruite-img img {
     transition: 0.5s;
 }
