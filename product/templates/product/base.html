@@ -8,7 +8,7 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
-
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,8 +85,10 @@
 
         <!-- Tastimonial End -->
 
-{% block body %}
-{% endblock %}
+<div class="container-fluid" style="padding-top: 100px;"> <!-- Adjust padding-top based on navbar height -->
+        {% block body %}
+        {% endblock %}
+    </div>
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
             <div class="container py-5">
