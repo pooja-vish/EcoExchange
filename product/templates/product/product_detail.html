@@ -1,27 +1,23 @@
-{% extends base.html %}
+{% extends 'product/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Product details</title>
-</head>
-<body>
-    <h1>{{ product.product_name }}</h1>
-    </br>
-    </br>
-    <img src="product.image.url" alt="{{ product.product_name }}">
-{#    </br>#}
-{#    <p> Product ID: {{ product.product_id }}</p>#}
-    </br>
-    <p> Description: {{ product.product_description }}</p>
-    </br>
-    <p> Quantity available: {{ product.quantity }}</p>
-    </br>
-    <p> Price per piece $: {{ product.price }}</p>
-    </br>
-    <p> Product Category: {{ product.category }}</p>
-    </br>
-    <p>Product sold by: {{ product.user }}</p>
-</body>
-</html>
+{% block title %}Product Details{% endblock title %}
+{% block body %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-sm-8 offset-sm-2">
+                <h3>{{ product.product_name }}</h3>
+                <hr>
+                <div class="shadow p-5">
+                    <div class="text-center">
+                        <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="img-fluid mb-3">
+                    </div>
+                    <p><strong>Description:</strong> {{ product.product_description }}</p>
+                    <p><strong>Quantity:</strong> {{ product.quantity }}</p>
+                    <p><strong>Price:</strong> ${{ product.price }}</p>
+                    <p><strong>Category:</strong> {{ product.get_category_display }}</p>
+                    <p><strong>Posted by:</strong> {{ product.user.username }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
