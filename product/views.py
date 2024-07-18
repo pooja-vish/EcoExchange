@@ -28,7 +28,7 @@ def add_to_cart(request, product_id):
 def cart_detail(request):
     cart_items = CartItem.objects.filter(user=request.user)
     total_price = sum(item.get_total_price() for item in cart_items)
-    return render(request, 'cart_detail.html', {'cart_items': cart_items, 'total_price': total_price})
+    return render(request, 'product/cart_detail.html', {'cart_items': cart_items, 'total_price': total_price})
 
 def homepage(request):
     product_list = Product.objects.all()
