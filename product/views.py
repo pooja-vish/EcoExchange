@@ -19,15 +19,6 @@ def products_list(request):
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
-    if not created:
-        cart_item.quantity += 1
-    cart_item.save()
-    return redirect('cart_detail')
-
-@login_required
-def cart_detail(request):
-    product = get_object_or_404(Product, id=product_id)
-    cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
 
     if product.quantity > 0:
         cart_item.is_available = True
@@ -45,6 +36,12 @@ def cart_detail(request):
 
     cart_item.save()
     return redirect('cart_detail')
+
+@login_required
+def cart_detail(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    total_price = sum(item.get_total_price() for item in cart_items if item.is_available)
+    return render(request, 'product/cart_detail.html', {'cart_items': cart_items, 'total_price': total_price})
 
 def homepage(request):
     product_list = Product.objects.all()
