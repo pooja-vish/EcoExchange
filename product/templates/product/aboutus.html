@@ -1,0 +1,43 @@
+{% extends 'product/base.html' %}
+{% load static %}
+{% block title %}About Us{% endblock title %}
+{% block body %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-sm-8 offset-sm-2">
+                <h3>ABOUT US:</h3>
+                <hr>
+                <div class="shadow p-5">
+                    <div class="text-center">
+                        <p>
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="row my-3">
+            <div class="col-sm-8 offset-sm-2">
+                <h3>OUR TEAM:
+                </h3>
+                <hr>
+
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card">
+                            <img src="{% static 'EcoExchange/img/team/Tanya.png' %}" class="card-img-top" alt="TG">
+                            <div class="card-body text-center">
+                                <h4 class="card-title">
+                                    <a href="https://www.linkedin.com/in/gautamt11" target="_blank">Tanya Gautam</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+{#                add 5 more cards#}
+                </div>
+            </div>
+    </div>
+    </div>
+        </div>
+    </div>
+{% endblock body %}
