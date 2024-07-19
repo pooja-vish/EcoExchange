@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'product.apps.ProductConfig',
     'reviews',
-    'order.apps.OrderConfig'
+    'order.apps.OrderConfig',
+    'product_crud'
 
 ]
 
