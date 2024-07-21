@@ -13,6 +13,8 @@ def login_view(request):
     form = LoginForm()
     if request.method == 'POST':
         form = LoginForm(request.POST)
+        print("ello")
+        print(form.is_valid())
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
@@ -23,6 +25,9 @@ def login_view(request):
                 return redirect('product_list')  # Replace 'index' with your desired URL name
             else:
                 error_message = "Invalid email or password."
+
+        else:
+            print(form.errors)
 
     return render(request, 'user_details/login.html', {'form': form, 'error_message': error_message})
 

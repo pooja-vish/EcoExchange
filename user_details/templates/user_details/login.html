@@ -7,13 +7,9 @@
         <div class="col-sm-6 offset-sm-3">
             <h3>Login</h3>
             <hr>
-            <form action="" method="post" novalidate class="shadow p-5">
+            <form action="{% url 'login_details' %}" method="post" novalidate class="shadow p-5">
                 {% csrf_token %}
-                {% for fm in form %}
-                {{ fm.label_tag }} {{ fm }} <small class="text-danger">{{ fm.errors | striptags }}</small>
-                <br>
-                {% endfor %}
-
+               {{ form.as_p }}
             <small> <a>Forgot Password ?</a>
             </small>
             <br>

@@ -4,3 +4,4 @@ from .models import Member, UserHistory
 # Register your models here.
 admin.site.register(Member)
 admin.site.register(UserHistory)
+
