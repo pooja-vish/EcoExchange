@@ -1,11 +1,12 @@
 # views.py
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm
 from django.views import View
 from user_details.forms import CustomerRegistrationForm
 from django.contrib import messages
+from .models import Member
 
 
 def login_view(request):
@@ -47,3 +48,8 @@ class CustomerRegistrationView(View):
         else:
             messages.warning(request, 'Please correct the error below.')
         return render(request, 'registration/customerregistration.html', {'form': form})
+
+
+def seller_desc_view(request, user_id):
+    seller = get_object_or_404(Member, user_id=user_id)
+    return render(request, 'user_details/seller_desc.html', {'seller': seller})
