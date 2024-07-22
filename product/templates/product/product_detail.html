@@ -15,7 +15,8 @@
                     <p><strong>Quantity:</strong> {{ product.quantity }}</p>
                     <p><strong>Price:</strong> ${{ product.price }}</p>
                     <p><strong>Category:</strong> {{ product.get_category_display }}</p>
-                    <p><strong>Posted by:</strong> {{ product.user.username }}</p>
+                    <p><strong>Posted by:</strong> <a href="{% url 'user_details:seller_desc' product.user_id %}" >{{ product.user.username }}</a></p>
+                    <p style='text-align: center'><a href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a></p>
                 </div>
             </div>
         </div>
