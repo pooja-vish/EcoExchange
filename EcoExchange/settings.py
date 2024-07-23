@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'product_crud',
 
 
+
 ]
 
 MIDDLEWARE = [

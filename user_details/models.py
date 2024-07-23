@@ -10,6 +10,15 @@ class Member(User):
     country=models.CharField(default='Canada', max_length=200)
     coin_balance=models.IntegerField(default=0)
 
+
+class Transaction(models.Model):
+    user = models.ForeignKey(Member, on_delete=models.CASCADE)
+    transaction_id = models.CharField(max_length=255, unique=True)
+    date = models.DateTimeField(auto_now_add=True)
+    quantity = models.PositiveIntegerField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+
 class UserHistory(models.Model):
     user_hist_id = models.IntegerField(unique=True, primary_key=True)
     user_id =models.ForeignKey(Member, on_delete=models.CASCADE)
