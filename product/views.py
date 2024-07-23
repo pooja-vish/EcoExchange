@@ -19,7 +19,7 @@ def products_list(request):
 
 
 @login_required
-@csrf_exempt
+
 def add_to_cart(request, product_id):
     try:
         member = Member.objects.get(username=request.user.username)
