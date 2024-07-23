@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
 from user_details.models import  Member
 from product.models import Product, CartItem
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 
@@ -16,9 +17,32 @@ def products_list(request):
 
 
 
+
+@login_required
+@csrf_exempt
+def add_to_cart(request, product_id):
+    try:
+        member = Member.objects.get(username=request.user.username)
+    except Member.DoesNotExist:
+        member = None
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        product = get_object_or_404(Product, product_id=product_id)
+        quantity = int(request.POST.get('quantity', 1))
+
+        cart_item, created = CartItem.objects.get_or_create(user=member, product=product)
+        if not created:
+            cart_item.quantity = quantity
+        else:
+            cart_item.quantity = quantity
+        cart_item.save()
+
+        return JsonResponse({'message': 'Item added to the cart.'})
+    return JsonResponse({'message': 'Failed to add item to the cart.'}, status=400)
+
+
 @login_required
 def add_item_to_cart(request, product_id):
-    product = get_object_or_404(Product, product_id=product_id)
+
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     try:
         member = Member.objects.get(username=request.user.username)
@@ -133,8 +157,15 @@ def homepage(request):
 
 
 def product_detail(request,pk):
-    product = get_object_or_404(Product,pk=pk)
-    return render(request,template_name='product/product_detail.html',context={'product':product})
+    try:
+        member = Member.objects.get(username=request.user.username)
+    except Member.DoesNotExist:
+        member = None
+    product = get_object_or_404(Product, pk=pk)
+    cart_item = CartItem.objects.filter(user=member, product=product).first()
+    cart_quantity = cart_item.quantity if cart_item else 0
+
+    return render(request,template_name='product/product_detail.html',context={'product':product,'cart_quantity':cart_quantity})
 
 
 def aboutus (request):

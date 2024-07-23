@@ -15,10 +15,70 @@
                     <p><strong>Quantity:</strong> {{ product.quantity }}</p>
                     <p><strong>Price:</strong> ${{ product.price }}</p>
                     <p><strong>Category:</strong> {{ product.get_category_display }}</p>
-                    <p><strong>Posted by:</strong> <a href="{% url 'user_details:seller_desc' product.user_id %}" >{{ product.user.username }}</a></p>
-                    <p style='text-align: center'><a href="#" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a></p>
+                    <p><strong>Posted by:</strong> <a href="{% url 'user_details:seller_desc' product.user_id %}">{{ product.user.username }}</a></p>
+                    <div class="form-group">
+                        <label for="quantity">Quantity:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-secondary" type="button" id="decrease">-</button>
+                            </div>
+                            <input type="text" id="quantity" name="quantity" class="form-control text-center" value={{ cart_quantity }} readonly>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="increase">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p style='text-align: center'>
+                        <button id="add-to-cart" class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary">
+                            <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                        </button>
+                    </p>
+                    <div id="message" class="alert alert-success d-none" role="alert">
+                        Item added to the cart. <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#increase').click(function() {
+                var quantity = parseInt($('#quantity').val());
+                $('#quantity').val(quantity + 1);
+            });
+
+            $('#decrease').click(function() {
+                var quantity = parseInt($('#quantity').val());
+                if (quantity > 1) {
+                    $('#quantity').val(quantity - 1);
+                }
+            });
+
+            $('#add-to-cart').click(function() {
+                var quantity = $('#quantity').val();
+                $.ajax({
+                    url: "{% url 'add_to_cart' product.product_id %}",
+                    type: "POST",
+                    data: {
+                        'quantity': quantity,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        $('#message').removeClass('d-none');
+                        $('#message').html(response.message + ' <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+                    },
+                    error: function(xhr, errmsg, err) {
+                        $('#message').removeClass('d-none alert-success').addClass('alert-danger');
+                        $('#message').html('There was an error adding the item to the cart. <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
+                    }
+                });
+            });
+
+            $('#message').on('click', '.close', function() {
+                $('#message').addClass('d-none');
+            });
+        });
+    </script>
 {% endblock %}

@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'product.apps.ProductConfig',
     'reviews',
     'order.apps.OrderConfig',
-    'product_crud'
+    'product_crud',
+
 
 ]
 
