@@ -1,5 +1,5 @@
 {% extends 'product/base.html' %}
-{% block title %}Buy Coins{% endblock title %}
+{% block title %}Buy Coins{% endblock %}
 {% block body %}
 <div class="container my-5">
     <div class="card shadow-sm">
@@ -21,6 +21,11 @@
                     </div>
                 </div>
                 <button type="submit" id="submit" class="btn btn-primary btn-block">Pay Now</button>
+                <div id="loading-spinner" class="text-center mt-3 d-none">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
             </form>
             <div id="message" class="alert alert-info mt-3 d-none"></div>
         </div>
@@ -37,12 +42,19 @@
     card.mount('#card-element');
 
     var form = document.getElementById('payment-form');
+    var messageElement = document.getElementById('message');
+    var loadingSpinner = document.getElementById('loading-spinner');
+
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
         var quantity = document.getElementById('coin-quantity').value;
         var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        // Show loading spinner
+        loadingSpinner.classList.remove('d-none');
+
+        // Create Payment Intent
         fetch('{% url "user_details:create_payment_intent" %}', {
             method: 'POST',
             headers: {
@@ -55,43 +67,65 @@
             return response.json();
         })
         .then(function(data) {
+            if (!data.clientSecret) {
+                throw new Error('Failed to create payment intent');
+            }
             return stripe.confirmCardPayment(data.clientSecret, {
                 payment_method: {
                     card: card,
                 }
-            }).then(function(result) {
-                var messageElement = document.getElementById('message');
-                if (result.error) {
-                    messageElement.textContent = result.error.message;
-                    messageElement.classList.add('alert-danger');
-                    messageElement.classList.remove('d-none');
-                } else {
-                    if (result.paymentIntent.status === 'succeeded') {
-                        fetch('{% url "user_details:update_coins_balance" %}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrfToken
-                            },
-                            body: JSON.stringify({ quantity: quantity })
-                        })
-                        .then(function(response) {
-                            return response.json();
-                        })
-                        .then(function(data) {
-                            if (data.success) {
-                                messageElement.textContent = 'Payment successful! Coins added to your balance.';
-                                messageElement.classList.add('alert-success');
-                                messageElement.classList.remove('d-none');
-                            } else {
-                                messageElement.textContent = 'Failed to update balance.';
-                                messageElement.classList.add('alert-danger');
-                                messageElement.classList.remove('d-none');
-                            }
-                        });
-                    }
-                }
             });
+        })
+        .then(function(result) {
+            if (result.error) {
+                messageElement.textContent = result.error.message;
+                messageElement.classList.add('alert-danger');
+                messageElement.classList.remove('d-none');
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    // Send transaction details to the backend
+                    fetch('{% url "user_details:update_coins_balance" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({
+                            quantity: quantity,
+                            transaction_id: result.paymentIntent.id
+                        })
+                    })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        if (data.success) {
+                            messageElement.textContent = 'Payment successful! Coins added to your balance.';
+                            messageElement.classList.add('alert-success');
+                            messageElement.classList.remove('d-none');
+                        } else {
+                            messageElement.textContent = 'Failed to update balance.';
+                            messageElement.classList.add('alert-danger');
+                            messageElement.classList.remove('d-none');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        messageElement.textContent = 'An error occurred while updating balance.';
+                        messageElement.classList.add('alert-danger');
+                        messageElement.classList.remove('d-none');
+                    });
+                }
+            }
+        })
+        .catch(function(error) {
+            messageElement.textContent = 'An error occurred: ' + error.message;
+            messageElement.classList.add('alert-danger');
+            messageElement.classList.remove('d-none');
+        })
+        .finally(function() {
+            // Hide loading spinner
+            loadingSpinner.classList.add('d-none');
         });
     });
 </script>

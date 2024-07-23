@@ -6,7 +6,7 @@ from .forms import LoginForm
 from django.views import View
 from user_details.forms import CustomerRegistrationForm
 from django.contrib import messages
-from .models import Member
+from .models import Member, Transaction
 import json
 import stripe
 from django.conf import settings
@@ -95,6 +95,7 @@ def update_coins_balance(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         quantity = int(data.get('quantity'))
+        transaction_id = data.get('transaction_id')
 
         if quantity <= 0:
             return JsonResponse({'success': False}, status=400)
@@ -103,6 +104,14 @@ def update_coins_balance(request):
 
         member.coin_balance += quantity
         member.save()
+        Transaction.objects.create(
+            user=member,
+            transaction_id=transaction_id,
+            quantity=quantity,
+            amount=quantity * 5.00  # Assuming $5.00 for 50 coins or $10.00 for 100 coins
+        )
+
+
 
         return JsonResponse({'success': True})
 
