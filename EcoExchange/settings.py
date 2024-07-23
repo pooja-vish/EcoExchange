@@ -139,6 +139,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+STRIPE_SECRET_KEY = 'sk_test_51Pfb70L62CJC4fFrWjxMUHlpyAo5S25t0jQmwJP95NBckQvh80V7LGioYMW9JZ8yuP9gv6uUlkaywl4CNCTodYsv00kT5C5sGY'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51Pfb70L62CJC4fFriAP4ZbK2rWjIPdO4jVveMCNPbnp7w0991MqI6Asi3LMcmTQflqTDfZqOb1qJKaTYDCbHz22Q00Y1F3Js4P'
+
 MEDIA_URL = 'product/static/product/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '')
 

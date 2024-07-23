@@ -8,6 +8,7 @@ class Member(User):
     city=models.CharField(default='Windsor', max_length=200)
     mobile_no=PhoneNumberField(unique=True)
     country=models.CharField(default='Canada', max_length=200)
+    coin_balance=models.IntegerField(default=0)
 
 class UserHistory(models.Model):
     user_hist_id = models.IntegerField(unique=True, primary_key=True)
