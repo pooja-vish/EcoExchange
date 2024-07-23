@@ -1,10 +1,6 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
-
 from product.models import Product
-
-
-# Create your views here.
 
 def products_list(request):
     product_list = Product.objects.all()

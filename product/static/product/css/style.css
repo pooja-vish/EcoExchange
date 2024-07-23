@@ -6,11 +6,18 @@
     transition: opacity .8s ease-out, visibility 0s linear .5s;
     z-index: 99999;
  }
-
+.row-margin {
+    margin-top: 30px;
+    margin-left: 20px
+}
  #spinner.show {
      transition: opacity .8s ease-out, visibility 0s linear .0s;
      visibility: visible;
      opacity: 1;
+ }
+ label {
+     display: inline-block;
+     color: black;
  }
 .form-control {
   display: block;
@@ -20,7 +27,7 @@
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #495057;
+  color: black;
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #ced4da;
@@ -47,7 +54,12 @@
     font-weight: 600;
     transition: .5s;
 }
+.button-display {
+    display:flex;
+    gap: 10px;
 
+
+}
 .btn-square {
     width: 32px;
     height: 32px;
@@ -77,6 +89,33 @@
     align-items: center;
     justify-content: center;
     font-weight: normal;
+}
+.div-left-space {
+    margin-left: 40px;
+    margin-bottom: 30px;
+}
+.div-space {
+    margin-bottom: 30px;
+    margin-left: 20px;
+}
+.image-div {
+    width:200px;
+    height:200px
+}
+.div-scroll {
+    overflow-y:scroll;
+    height: 750px;
+    width: 1370px;
+}
+.div-details {
+    border-radius: 10px !important;
+}
+.btn-square {
+    width: 32px;
+    height: 32px;
+}
+.pad-left {
+    padding-left: 15%;
 }
 
 .btn.border-secondary {
