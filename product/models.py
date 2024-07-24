@@ -1,6 +1,6 @@
 from django.db import models
-
 from user_details.models import Member
+
 
 class Product(models.Model):
     CATEGORY_CHOICES = [
@@ -26,9 +26,30 @@ class Product(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     user = models.ForeignKey(Member, on_delete=models.CASCADE)
 
-
     def __str__(self):
         return self.product_name
+
+
+class Auction(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    starting_bid = models.DecimalField(max_digits=10, decimal_places=2)
+    current_bid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    current_winner = models.ForeignKey(Member, on_delete=models.SET_NULL, null=True, blank=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+    def __str__(self):
+        return f"Auction for {self.product.product_name}"
+
+
+class Bid(models.Model):
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='bids')
+    user = models.ForeignKey(Member, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} bid {self.amount} on {self.auction.product.product_name}"
 
 
 class CartItem(models.Model):
@@ -46,4 +67,3 @@ class CartItem(models.Model):
 
     def get_total_price(self):
         return self.quantity * self.product.price
-

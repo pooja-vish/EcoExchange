@@ -1,0 +1,52 @@
+{% extends 'product/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h1>Auction for {{ product.product_name }}</h1>
+    <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="img-fluid mb-3">
+    <p><strong>Description:</strong> {{ product.product_description }}</p>
+    <p><strong>Current Bid:</strong> $<span id="current-bid">{{ auction.current_bid }}</span></p>
+    <p><strong>Current Winner:</strong>
+        <span id="current-winner">
+            {% if auction.current_winner %}
+                {{ auction.current_winner.username }}
+            {% else %}
+                None
+            {% endif %}
+        </span>
+    </p>
+
+    <form id="bid-form">
+        <input type="hidden" id="user-id" value="{{ request.user.id }}">
+        <div class="form-group">
+            <label for="bid-amount">Your Bid:</label>
+            <input type="number" id="bid-amount" class="form-control" step="0.01" min="{{ auction.current_bid|floatformat:2 }}">
+        </div>
+        <button type="button" id="place-bid" class="btn btn-primary">Place Bid</button>
+    </form>
+</div>
+
+<script>
+    const auctionSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/auction/' + '{{ product.product_id }}/'
+    );
+    console.log(auctionSocket)
+
+    auctionSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        document.getElementById('current-bid').textContent = data.bid;
+        document.getElementById('current-winner').textContent = data.user;
+    };
+
+    document.getElementById('place-bid').onclick = function(e) {
+        const bid = document.getElementById('bid-amount').value;
+        const user = document.getElementById('user-id').value;
+
+        auctionSocket.send(JSON.stringify({
+            'bid': bid,
+            'user': user
+        }));
+    };
+</script>
+{% endblock %}

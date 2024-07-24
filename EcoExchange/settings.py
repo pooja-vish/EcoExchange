@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'reviews',
     'order.apps.OrderConfig',
     'product_crud',
-
+    'channels',
 
 
 ]
@@ -79,7 +79,21 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'EcoExchange.asgi.application'
+
 WSGI_APPLICATION = 'EcoExchange.wsgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
+
+# WSGI_APPLICATION = 'EcoExchange.wsgi.application'
 
 
 # Database

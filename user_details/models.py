@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
-# Create your models here.
+
+
+
 class Member(User):
     user_id = models.IntegerField(unique=True, primary_key=True)
     address = models.TextField()
