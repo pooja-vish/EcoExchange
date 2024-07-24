@@ -30,9 +30,11 @@ class AuctionConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         bid = text_data_json['bid']
         user_id = text_data_json['user']
+        print("user_id: ", user_id)
 
         # Fetch a Member instance instead of a User instance
-        user = await sync_to_async(Member.objects.get)(pk=user_id)
+        user = await sync_to_async(Member.objects.get)(username=user_id)
+        print("user: ", user)
         auction = await sync_to_async(Auction.objects.get)(product_id=self.product_id)
 
         # Save the new bid

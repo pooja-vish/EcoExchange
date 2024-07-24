@@ -18,7 +18,7 @@
     </p>
 
     <form id="bid-form">
-        <input type="hidden" id="user-id" value="{{ request.user.id }}">
+        <input type="hidden" id="user-id" value="{{ request.user.username }}">
         <div class="form-group">
             <label for="bid-amount">Your Bid:</label>
             <input type="number" id="bid-amount" class="form-control" step="0.01" min="{{ auction.current_bid|floatformat:2 }}">
