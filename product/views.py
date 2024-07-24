@@ -39,6 +39,24 @@ def add_to_cart(request, product_id):
         return JsonResponse({'message': 'Item added to the cart.'})
     return JsonResponse({'message': 'Failed to add item to the cart.'}, status=400)
 
+def addtocart(request, product_id):
+    try:
+        member = Member.objects.get(username=request.user.username)
+    except Member.DoesNotExist:
+        member = None
+
+    product = get_object_or_404(Product, product_id=product_id)
+
+
+    cart_item, created = CartItem.objects.get_or_create(user=member, product=product)
+    if not created:
+        cart_item.product=product
+        cart_item.quantity += 1
+    else:
+        cart_item.quantity = 1
+    cart_item.save()
+
+    return redirect('cart_detail')
 
 @login_required
 def add_item_to_cart(request, product_id):
@@ -51,6 +69,8 @@ def add_item_to_cart(request, product_id):
 
     cart_item, created = CartItem.objects.get_or_create(user=member, id=product_id)
     print(cart_item)
+    product = cart_item.product
+
     if product.quantity - cart_item.quantity > 0:
         cart_item.quantity += 1
         cart_item.save()
