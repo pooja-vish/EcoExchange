@@ -6,6 +6,62 @@ from product.models import Product, CartItem, Auction
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
+from django.views import View
+from .forms import AuctionForm
+from django.views.generic import ListView
+
+
+class AuctionCreateView(View):
+    def get(self, request):
+        form = AuctionForm()
+        return render(request, 'product/auction_form.html', {'form': form})
+
+    def post(self, request):
+        form = AuctionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        return JsonResponse({'success': False, 'errors': form.errors})
+
+
+class AuctionUpdateView(View):
+    def get(self, request, pk):
+        auction = get_object_or_404(Auction, pk=pk)
+        form = AuctionForm(instance=auction)
+        return render(request, 'product/auction_form.html', {'form': form})
+
+    def post(self, request, pk):
+        auction = get_object_or_404(Auction, pk=pk)
+        form = AuctionForm(request.POST, instance=auction)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        return JsonResponse({'success': False, 'errors': form.errors})
+
+
+class AuctionDeleteView(View):
+    def post(self, request, pk):
+        auction = get_object_or_404(Auction, pk=pk)
+        auction.delete()
+        return JsonResponse({'success': True})
+
+
+class AuctionListView(ListView):
+    model = Auction
+    template_name = 'product/auction_list.html'
+
+    def get_queryset(self):
+        try:
+            member = Member.objects.get(username=self.request.user.username)
+        except Member.DoesNotExist:
+            member = None
+        return Auction.objects.filter(product__user=member)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['auctions'] = self.get_queryset()
+        return context
+
 
 def products_list(request):
     product_list = Product.objects.all()
