@@ -22,4 +22,5 @@ urlpatterns = [
     path('auction/update/<int:pk>/', AuctionUpdateView.as_view(), name='auction_update'),
     path('auction/delete/<int:pk>/', AuctionDeleteView.as_view(), name='auction_delete'),
 
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

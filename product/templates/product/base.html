@@ -28,6 +28,23 @@
 
         <!-- Template Stylesheet -->
         <link href="{% static 'product/css/style.css' %}" rel="stylesheet">
+        <script>
+        function editProduct(id, name, description, quantity, price, image, category) {
+            console.log('Edit function called with ID:', id);
+            console.log('image =', image)
+            console.log('img= ', "../product/static/" + "" + image)
+            // Populate the form fields with the product data
+            document.getElementById('productId').value = id;
+            document.getElementById('productName').value = name;
+            document.getElementById('productDescription').value = description;
+            document.getElementById('productQuantity').value = quantity;
+            document.getElementById('productPrice').value = price;
+            document.getElementById('productImage').src = image;
+            document.getElementById('productCategory').value=category
+            // Show the modal
+            $(`#editProductModal`).modal('show');
+        }
+        </script>
     </head>
 
     <body>

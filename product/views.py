@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.text import Truncator
+from product.models import Product
+
+=======
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
@@ -63,6 +69,7 @@ class AuctionListView(ListView):
         return context
 
 
+>>>>>>> 4bc94ae32b093957a919254a490b29c4baf2cb43
 def products_list(request):
     product_list = Product.objects.all()
     for product in product_list:
