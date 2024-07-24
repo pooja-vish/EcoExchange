@@ -25,6 +25,7 @@
         </div>
         <button type="button" id="place-bid" class="btn btn-primary">Place Bid</button>
     </form>
+    <div id="error-message" class="alert alert-danger d-none mt-3"></div>
 </div>
 
 <script>
@@ -35,18 +36,30 @@
 
     auctionSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        document.getElementById('current-bid').textContent = data.bid;
-        document.getElementById('current-winner').textContent = data.user;
+        if (data.error) {
+            document.getElementById('error-message').textContent = data.error;
+            document.getElementById('error-message').classList.remove('d-none');
+        } else {
+            document.getElementById('current-bid').textContent = data.bid;
+            document.getElementById('current-winner').textContent = data.user;
+            document.getElementById('error-message').classList.add('d-none');
+        }
     };
 
     document.getElementById('place-bid').onclick = function(e) {
-        const bid = document.getElementById('bid-amount').value;
+        const bid = parseFloat(document.getElementById('bid-amount').value);
         const user = document.getElementById('user-id').value;
+        const currentBid = parseFloat(document.getElementById('current-bid').textContent);
 
-        auctionSocket.send(JSON.stringify({
-            'bid': bid,
-            'user': user
-        }));
+        if (bid <= currentBid) {
+            document.getElementById('error-message').textContent = 'Your bid must be higher than the current bid.';
+            document.getElementById('error-message').classList.remove('d-none');
+        } else {
+            auctionSocket.send(JSON.stringify({
+                'bid': bid,
+                'user': user
+            }));
+        }
     };
 </script>
 {% endblock %}

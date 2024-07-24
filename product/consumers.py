@@ -30,33 +30,42 @@ class AuctionConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         bid = text_data_json['bid']
         user_id = text_data_json['user']
-        print("user_id: ", user_id)
 
         # Fetch a Member instance instead of a User instance
         user = await sync_to_async(Member.objects.get)(username=user_id)
-        print("user: ", user)
         auction = await sync_to_async(Auction.objects.get)(product_id=self.product_id)
 
-        # Save the new bid
-        new_bid = await sync_to_async(Bid.objects.create)(
-            user=user,
-            auction=auction,
-            amount=bid
-        )
+        # Check if the bid is greater than the current bid
+        if float(bid) <= auction.current_bid:
+            await self.send(text_data=json.dumps({
+                'error': 'Your bid must be higher than the current bid.'
+            }))
+            return
 
-        auction.current_bid = new_bid.amount
-        auction.current_winner = user
-        await sync_to_async(auction.save)()
+        if user.coin_balance >= float(bid):
+            new_bid = await sync_to_async(Bid.objects.create)(
+                user=user,
+                auction=auction,
+                amount=bid
+            )
 
-        # Send message to room group
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'auction_update',
-                'bid': bid,
-                'user': user.username
-            }
-        )
+            auction.current_bid = new_bid.amount
+            auction.current_winner = user
+            await sync_to_async(auction.save)()
+
+            # Send message to room group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'auction_update',
+                    'bid': bid,
+                    'user': user.username
+                }
+            )
+        else:
+            await self.send(text_data=json.dumps({
+                'error': 'Insufficient coin balance to place the bid.'
+            }))
 
     async def auction_update(self, event):
         bid = event['bid']

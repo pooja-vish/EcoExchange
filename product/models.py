@@ -32,7 +32,6 @@ class Product(models.Model):
 
 class Auction(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
-    starting_bid = models.DecimalField(max_digits=10, decimal_places=2)
     current_bid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     current_winner = models.ForeignKey(Member, on_delete=models.SET_NULL, null=True, blank=True)
     start_time = models.DateTimeField()
