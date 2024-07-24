@@ -12,7 +12,10 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from product.models import Product
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 def login_view(request):
     error_message = None
     form = LoginForm()
@@ -56,7 +59,8 @@ class CustomerRegistrationView(View):
 
 def seller_desc_view(request, user_id):
     seller = get_object_or_404(Member, user_id=user_id)
-    return render(request, 'user_details/seller_desc.html', {'seller': seller})
+    products = Product.objects.filter(user=seller)
+    return render(request, 'user_details/seller_desc.html', {'seller': seller, 'products': products})
 
 
 @login_required
