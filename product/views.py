@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 
+# Create your views here.
+
 def products_list(request):
     product_list = Product.objects.all()
     for product in product_list:
@@ -14,7 +16,10 @@ def products_list(request):
     return render(request,template_name='product/product_list.html',context={'product_list':product_list})
 
 
+
+
 @login_required
+
 def add_to_cart(request, product_id):
     try:
         member = Member.objects.get(username=request.user.username)
@@ -34,6 +39,24 @@ def add_to_cart(request, product_id):
         return JsonResponse({'message': 'Item added to the cart.'})
     return JsonResponse({'message': 'Failed to add item to the cart.'}, status=400)
 
+def addtocart(request, product_id):
+    try:
+        member = Member.objects.get(username=request.user.username)
+    except Member.DoesNotExist:
+        member = None
+
+    product = get_object_or_404(Product, product_id=product_id)
+
+
+    cart_item, created = CartItem.objects.get_or_create(user=member, product=product)
+    if not created:
+        cart_item.product=product
+        cart_item.quantity += 1
+    else:
+        cart_item.quantity = 1
+    cart_item.save()
+
+    return redirect('cart_detail')
 
 @login_required
 def add_item_to_cart(request, product_id):
@@ -46,7 +69,8 @@ def add_item_to_cart(request, product_id):
 
     cart_item, created = CartItem.objects.get_or_create(user=member, id=product_id)
     print(cart_item)
-    product = get_object_or_404(Product, id=cart_item.product.id)
+    product = cart_item.product
+
     if product.quantity - cart_item.quantity > 0:
         cart_item.quantity += 1
         cart_item.save()
@@ -71,7 +95,6 @@ def add_item_to_cart(request, product_id):
         })
 
     return redirect('cart_detail')
-
 
 @login_required
 def remove_item_from_cart(request, item_id):
@@ -103,7 +126,6 @@ def remove_item_from_cart(request, item_id):
 
     return redirect('cart_detail')
 
-
 @login_required
 def delete_item_from_cart(request, item_id):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
@@ -124,7 +146,6 @@ def delete_item_from_cart(request, item_id):
         })
 
     return redirect('cart_detail')
-
 
 @login_required
 def cart_detail(request):
@@ -150,10 +171,9 @@ def cart_detail(request):
 
     return render(request, 'product/cart_detail.html', {'cart_items': cart_items, 'total_price': total_price})
 
-
 def homepage(request):
     product_list = Product.objects.all()
-    return render(request, template_name='product/homepage.html', context={'product_list': product_list})
+    return render(request,template_name='product/homepage.html',context={'product_list':product_list})
 
 
 def product_detail(request,pk):
@@ -165,8 +185,9 @@ def product_detail(request,pk):
     cart_item = CartItem.objects.filter(user=member, product=product).first()
     cart_quantity = cart_item.quantity if cart_item else 0
 
-    return render(request,template_name='product/product_detail.html',context={'product': product, 'cart_quantity': cart_quantity})
+    return render(request,template_name='product/product_detail.html',context={'product':product,'cart_quantity':cart_quantity})
 
 
-def aboutus(request):
+def aboutus (request):
     return render(request,'product/aboutus.html')
+
