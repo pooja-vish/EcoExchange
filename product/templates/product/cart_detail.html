@@ -138,6 +138,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('total').innerText = `$${data.total_price}`;
                 } else {
                     alert(data.message);
+                    if (action === 'delete') {
+                        document.getElementById(`item-${itemId}`).remove();
+                    } else {
+                        document.getElementById(`quantity-${itemId}`).value = data.quantity;
+                        document.getElementById(`total-${itemId}`).innerText = `${data.total} $`;
+                    }
+                    document.getElementById('subtotal').innerText = `$${data.subtotal}`;
+                    document.getElementById('total').innerText = `$${data.total_price}`;
                 }
             })
             .catch(error => {

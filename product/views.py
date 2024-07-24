@@ -129,14 +129,14 @@ def add_item_to_cart(request, product_id):
         success = True
         message = ''
     else:
+        cart_item.save()
         success = False
         message = 'Sorry, this product is currently unavailable.'
 
     if is_ajax:
 
         subtotal = sum(item.get_total_price() for item in CartItem.objects.filter(user=member))
-        total_price = subtotal   # Assuming flat shipping rate of $3
-
+        total_price = subtotal
         return JsonResponse({
             'success': success,
             'message': message,
@@ -151,7 +151,9 @@ def add_item_to_cart(request, product_id):
 
 @login_required
 def remove_item_from_cart(request, item_id):
-    product = get_object_or_404(Product, product_id=item_id)
+    print("hello")
+    print("hi")
+
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     try:
         member = Member.objects.get(username=request.user.username)
@@ -159,7 +161,7 @@ def remove_item_from_cart(request, item_id):
         member = None
 
     cart_item, created = CartItem.objects.get_or_create(user=member, id=item_id)
-
+    print(cart_item)
     if cart_item.quantity > 1:
         cart_item.quantity -= 1
         cart_item.save()
