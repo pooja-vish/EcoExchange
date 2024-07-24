@@ -1,0 +1,132 @@
+{% extends 'product/base.html' %}
+{% block title %}Buy Coins{% endblock %}
+{% block body %}
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="card-title text-center">Select the Amount of Coins</h3>
+            <form id="payment-form" class="mt-4">
+                <div class="form-group">
+                    <label for="coin-quantity">Coin Quantity</label>
+                    <select id="coin-quantity" name="quantity" class="form-control" required>
+                        <option value="50">50 coins - $5.00</option>
+                        <option value="100">100 coins - $10.00</option>
+                        <!-- Add more options if needed -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="card-element">Credit or Debit Card</label>
+                    <div id="card-element" class="form-control">
+                        <!-- A Stripe Element will be inserted here. -->
+                    </div>
+                </div>
+                <button type="submit" id="submit" class="btn btn-primary btn-block">Pay Now</button>
+                <div id="loading-spinner" class="text-center mt-3 d-none">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </form>
+            <div id="message" class="alert alert-info mt-3 d-none"></div>
+        </div>
+    </div>
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
+    var elements = stripe.elements();
+    var card = elements.create('card');
+    card.mount('#card-element');
+
+    var form = document.getElementById('payment-form');
+    var messageElement = document.getElementById('message');
+    var loadingSpinner = document.getElementById('loading-spinner');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var quantity = document.getElementById('coin-quantity').value;
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // Show loading spinner
+        loadingSpinner.classList.remove('d-none');
+
+        // Create Payment Intent
+        fetch('{% url "user_details:create_payment_intent" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ quantity: quantity })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data.clientSecret) {
+                throw new Error('Failed to create payment intent');
+            }
+            return stripe.confirmCardPayment(data.clientSecret, {
+                payment_method: {
+                    card: card,
+                }
+            });
+        })
+        .then(function(result) {
+            if (result.error) {
+                messageElement.textContent = result.error.message;
+                messageElement.classList.add('alert-danger');
+                messageElement.classList.remove('d-none');
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    // Send transaction details to the backend
+                    fetch('{% url "user_details:update_coins_balance" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({
+                            quantity: quantity,
+                            transaction_id: result.paymentIntent.id
+                        })
+                    })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        if (data.success) {
+                            messageElement.textContent = 'Payment successful! Coins added to your balance.';
+                            messageElement.classList.add('alert-success');
+                            messageElement.classList.remove('d-none');
+                        } else {
+                            messageElement.textContent = 'Failed to update balance.';
+                            messageElement.classList.add('alert-danger');
+                            messageElement.classList.remove('d-none');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        messageElement.textContent = 'An error occurred while updating balance.';
+                        messageElement.classList.add('alert-danger');
+                        messageElement.classList.remove('d-none');
+                    });
+                }
+            }
+        })
+        .catch(function(error) {
+            messageElement.textContent = 'An error occurred: ' + error.message;
+            messageElement.classList.add('alert-danger');
+            messageElement.classList.remove('d-none');
+        })
+        .finally(function() {
+            // Hide loading spinner
+            loadingSpinner.classList.add('d-none');
+        });
+    });
+</script>
+{% endblock %}
