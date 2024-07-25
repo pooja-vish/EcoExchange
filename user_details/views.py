@@ -170,3 +170,12 @@ class MyPasswordResetConfirmView(PasswordResetConfirmView):
     def get(self, request, *args, **kwargs):
         print(f"UID: {kwargs['uidb64']}, Token: {kwargs['token']}")
         return super().get(request, *args, **kwargs)
+
+
+
+@login_required
+def user_visit_history_view(request):
+    visits = request.COOKIES.get('visits', '[]')
+    visits = json.loads(visits) if visits else []
+    return render(request, 'user_details/user_visit_history.html', {'visits': visits})
+

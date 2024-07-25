@@ -1,0 +1,31 @@
+{% extends 'product/base.html' %}
+{% load static %}
+{% block title %}User Visit History{% endblock title %}
+{% block body %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-sm-12">
+                <h3>User Visit History</h3>
+                <hr>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Page</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visit in visits %}
+                        <tr>
+                            <td>{{ visit.user }}</td>
+                            <td>{{ visit.path }}</td>
+                            <td>{{ visit.timestamp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
