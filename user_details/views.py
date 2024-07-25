@@ -21,16 +21,16 @@ def login_view(request):
     form = LoginForm()
     if request.method == 'POST':
         form = LoginForm(request.POST)
-        print("ello")
+        print("Hello")
         print(form.is_valid())
         if form.is_valid():
-            email = form.cleaned_data['email']
+            username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            user = authenticate(request, username=email, password=password)
+            user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('product_list')  # Replace 'index' with your desired URL name
+                return redirect('user_details:profile')  # Replace 'index' with your desired URL name
             else:
                 error_message = "Invalid email or password."
 
@@ -48,13 +48,20 @@ class CustomerRegistrationView(View):
     def post(self, request):
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()  # Save the form data to the database
-            messages.success(request, 'Your account has been created!')
-            return redirect('login_details')  # Redirect to login page after successful registration
-        # If form is not valid, render the registration page again with the form and errors
+            user = form.save()  # Save the form data to the database
+            # Authenticate the user
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')  # Adjust according to your form fields
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)  # Log in the user
+                messages.success(request, 'Your account has been created and you are now logged in!')
+                return redirect('user_details:profile')  # Redirect to the profile page after successful login
         else:
+            # If form is not valid, render the registration page again with the form and errors
             messages.warning(request, 'Please correct the error below.')
         return render(request, 'registration/customerregistration.html', {'form': form})
+
 
 
 def seller_desc_view(request, user_id):
@@ -123,4 +130,39 @@ def update_coins_balance(request):
 @login_required
 def buy_coins(request):
     return render(request, 'user_details/payment.html',{'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY })
+
+
+class ProfileView(View):
+    def get(self, request):
+        user = request.user
+        try:
+            member = Member.objects.get(id=user.id)
+        except Member.DoesNotExist:
+            member = None
+
+        form = CustomerProfileForm(instance=member)
+        return render(request, 'profile.html', {'form': form})
+
+    def post(self, request):
+        form = CustomerProfileForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            address = form.cleaned_data['address']
+            city = form.cleaned_data['city']
+            mobile_no = form.cleaned_data['mobile_no']
+            country = form.cleaned_data['country']
+
+            # Update the Member profile linked to the current user
+            Member.objects.filter(id=user.id).update(
+                address=address,
+                city=city,
+                mobile_no=mobile_no,
+                country=country
+            )
+
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('homepage')  # Redirect to profile page or any other appropriate page
+        else:
+            messages.warning(request, 'Please correct the error below.')
+        return render(request, 'profile.html', {'form': form})
 
