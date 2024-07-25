@@ -6,11 +6,11 @@
         <div class="col-lg-12">
             <h2 class="mb-4">Categories</h2>
             <div class="d-flex flex-wrap">
-                {% for product_list in product_list %}
+                {% for category in categories_list %}
                 <div class="card m-2" style="width: 200px;">
-                    <img src="{% static 'product/img/'%}{{ product_list.category }}.png" class="card-img-top" alt="{{ product_list.category }}">
+                    <img src="{% static 'product/img/'%}{{ category }}.png" class="card-img-top" alt="{{ category }}">
                     <div class="card-body">
-                        <h5 class="card-title">{{ product_list.category }}</h5>
+                        <h5 class="card-title">{{ category }}</h5>
                         <!-- You can add more details about each category if needed -->
                     </div>
                 </div>

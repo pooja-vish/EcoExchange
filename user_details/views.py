@@ -141,7 +141,7 @@ class ProfileView(View):
             member = None
 
         form = CustomerProfileForm(instance=member)
-        return render(request, 'user_details\profile.html', {'form': form})
+        return render(request, 'user_details/profile.html', {'form': form})
 
     def post(self, request):
         form = CustomerProfileForm(request.POST)

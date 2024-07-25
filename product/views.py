@@ -1,10 +1,3 @@
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.text import Truncator
-from product.models import Product
-
-from django.http import JsonResponse, request
-
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
@@ -241,8 +234,8 @@ def cart_detail(request):
 
 
 def homepage(request):
-    product_list = Product.objects.all()
-    return render(request, template_name='product/homepage.html', context={'product_list': product_list})
+    distinct_categories = Product.objects.values_list('category', flat=True).distinct()
+    return render(request, template_name='product/homepage.html', context={'categories_list': distinct_categories})
 
 
 def product_detail(request, pk):
