@@ -1,8 +1,8 @@
 # views.py
-
+from django.contrib.auth.views import PasswordResetConfirmView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, CustomerProfileForm, MyPasswordChangedForm
+from .forms import LoginForm, CustomerProfileForm, MyPasswordChangedForm, MySetPasswordForm
 from django.views import View
 from user_details.forms import CustomerRegistrationForm
 from django.contrib import messages
@@ -161,3 +161,12 @@ class ProfileView(View):
         else:
             messages.warning(request, 'Please correct the error below.')
         return render(request, 'profile.html', {'form': form})
+
+
+class MyPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'user_details/password_reset_confirm.html'
+    form_class = MySetPasswordForm
+
+    def get(self, request, *args, **kwargs):
+        print(f"UID: {kwargs['uidb64']}, Token: {kwargs['token']}")
+        return super().get(request, *args, **kwargs)
