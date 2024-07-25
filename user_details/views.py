@@ -50,7 +50,7 @@ class CustomerRegistrationView(View):
         if form.is_valid():
             form.save()  # Save the form data to the database
             messages.success(request, 'Your account has been created!')
-            return redirect('login_details')  # Redirect to login page after successful registration
+            return redirect('user_details:login_details')  # Redirect to login page after successful registration
         # If form is not valid, render the registration page again with the form and errors
         else:
             messages.warning(request, 'Please correct the error below.')
