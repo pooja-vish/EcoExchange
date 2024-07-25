@@ -1,0 +1,29 @@
+{% extends 'product/base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block body %}
+<h1>Ordered Products</h1>
+    <h2>Products Sold</h2>
+    <ul>
+        {% for product in products %}
+            <li><strong>Product ID:</strong>
+                {{ product.id }}<br>
+                <strong>Product Name:</strong>
+                {{ product.name }}
+                <ul>
+                    {% for order_item in order_items1 %}
+                        {% if order_item.product_id == product %}
+                            <li><strong>Order ID:</strong>
+                                {{ order_item.order_id.id }}<br>
+                                <strong>Ordered by User ID:</strong>
+                                {{ order_item.order_id.user_id.id }}<br>
+                                <strong>User Name:</strong>
+                                {{ order_item.order_id.user_id.username }}
+                            </li> {% endif %}
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
