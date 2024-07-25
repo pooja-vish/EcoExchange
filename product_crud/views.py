@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 from product.models import Product
 from product_crud.forms import ProductForm
+from user_details.models import Member
 
 
 def product_details(request):
     print(request.method)
     form=ProductForm()
     if request.method == 'POST':
+        member = Member.objects.get(username=request.user)
         form = ProductForm(request.POST, request.FILES)
         form.is_valid()
         name = form.cleaned_data['product_name']
@@ -14,14 +16,13 @@ def product_details(request):
         quantity = form.cleaned_data['quantity']
         price = form.cleaned_data['price']
         category = form.cleaned_data['category']
-        user = form.cleaned_data['user']
         image = form.cleaned_data['image']
-        new_product = Product(product_name=name, product_description=description, quantity=quantity, price=price, category=category, user=user, image=image)
+        new_product = Product(product_name=name, product_description=description, quantity=quantity, price=price, category=category, user=member, image=image)
         new_product.save()
         form = ProductForm()
     else:
         form = ProductForm()
-    products = Product.objects.all()
+    products = Product.objects.filter(user=request.user)
     categories = Product.objects.values_list('category', flat=True).distinct()
     return render(request, 'products_crud/products_crud.html', {'form': form, 'products': products, 'categories': categories})
 
