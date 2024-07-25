@@ -4,10 +4,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Member(User):
-    address = models.TextField()
-    city = models.CharField(default='Windsor', max_length=200)
-    mobile_no = PhoneNumberField(unique=True)
-    country = models.CharField(default='Canada', max_length=200)
+    address = models.TextField(null=True, blank=True)
+    city = models.CharField(max_length=200, null=True, blank=True)
+    mobile_no = PhoneNumberField(unique=True, null=True, blank=True)
+    country = models.CharField(max_length=200, null=True, blank=True)
     coin_balance = models.IntegerField(default=0)
 
 
