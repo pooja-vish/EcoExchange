@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
 from product.models import Product
 
+from django.http import JsonResponse, request
 
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -69,11 +70,10 @@ class AuctionListView(ListView):
         return context
 
 
-
-def products_list(request):
+def products(request):
     product_list = Product.objects.all()
     for product in product_list:
-        product.short_description = Truncator(product.product_description).chars(100)
+        product.short_description = Truncator(product.product_description).chars(125)
     return render(request, template_name='product/product_list.html', context={'product_list': product_list})
 
 
@@ -269,3 +269,8 @@ def auction_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     auction = get_object_or_404(Auction, product=product)
     return render(request, 'product/auction.html', {'product': product, 'auction': auction})
+
+def dashboard(request):
+    details = Member.objects.filter(username=request.user.username)
+    return render(request, 'product/dashboard.html', {'details': details})
+
