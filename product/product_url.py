@@ -2,7 +2,7 @@ from django.urls import path
 from product import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import AuctionCreateView, AuctionUpdateView, AuctionDeleteView, AuctionListView
+from .views import AuctionCreateView, AuctionUpdateView, AuctionDeleteView, AuctionListView, AuctionRealTimeView
 
 urlpatterns = [
 
@@ -22,6 +22,6 @@ urlpatterns = [
     path('auction/create/', AuctionCreateView.as_view(), name='auction_create'),
     path('auction/update/<int:pk>/', AuctionUpdateView.as_view(), name='auction_update'),
     path('auction/delete/<int:pk>/', AuctionDeleteView.as_view(), name='auction_delete'),
+    path('realtime/<int:product_id>/', views.AuctionRealTimeView.as_view(), name='auction_realtime'),
 
-
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

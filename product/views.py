@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.views import View
 from .forms import AuctionForm
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 
 
 class AuctionCreateView(View):
@@ -60,6 +60,19 @@ class AuctionListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['auctions'] = self.get_queryset()
+        return context
+
+
+class AuctionRealTimeView(TemplateView):
+    template_name = 'product/realtime_bids.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product_id = self.kwargs.get('product_id')
+        product = get_object_or_404(Product, pk=product_id)
+        auction = get_object_or_404(Auction, product=product)
+        context['product'] = product
+        context['auction'] = auction
         return context
 
 
@@ -262,6 +275,7 @@ def auction_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     auction = get_object_or_404(Auction, product=product)
     return render(request, 'product/auction.html', {'product': product, 'auction': auction})
+
 
 def dashboard(request):
     details = Member.objects.filter(username=request.user.username)
