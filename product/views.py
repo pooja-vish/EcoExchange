@@ -1,8 +1,11 @@
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
 from product.models import Product
 
 from django.http import JsonResponse, request
+
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
 from user_details.models import Member

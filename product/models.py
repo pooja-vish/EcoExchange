@@ -1,6 +1,6 @@
 from django.db import models
 from user_details.models import Member
-
+from django.core.validators import MinValueValidator
 
 class Product(models.Model):
     CATEGORY_CHOICES = [
@@ -21,8 +21,8 @@ class Product(models.Model):
     product_name = models.CharField(max_length=255)
     product_description = models.TextField()
     image = models.ImageField(upload_to='img/')
-    quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.IntegerField(validators=[MinValueValidator(0)])
+    price = models.IntegerField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     user = models.ForeignKey(Member, on_delete=models.CASCADE)
 
