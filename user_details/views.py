@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm
+from .forms import LoginForm, CustomerProfileForm
 from django.views import View
 from user_details.forms import CustomerRegistrationForm
 from django.contrib import messages
@@ -141,7 +141,7 @@ class ProfileView(View):
             member = None
 
         form = CustomerProfileForm(instance=member)
-        return render(request, 'profile.html', {'form': form})
+        return render(request, 'user_details\profile.html', {'form': form})
 
     def post(self, request):
         form = CustomerProfileForm(request.POST)
@@ -164,5 +164,5 @@ class ProfileView(View):
             return redirect('homepage')  # Redirect to profile page or any other appropriate page
         else:
             messages.warning(request, 'Please correct the error below.')
-        return render(request, 'profile.html', {'form': form})
+        return render(request, 'user_details/profile.html', {'form': form})
 
