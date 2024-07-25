@@ -4,26 +4,32 @@
 
 {% block body %}
 <h1>Ordered Products</h1>
-    <h2>Products Sold</h2>
-    <ul>
-        {% for product in products %}
-            <li><strong>Product ID:</strong>
-                {{ product.id }}<br>
-                <strong>Product Name:</strong>
-                {{ product.name }}
-                <ul>
-                    {% for order_item in order_items1 %}
-                        {% if order_item.product_id == product %}
-                            <li><strong>Order ID:</strong>
-                                {{ order_item.order_id.id }}<br>
-                                <strong>Ordered by User ID:</strong>
-                                {{ order_item.order_id.user_id.id }}<br>
-                                <strong>User Name:</strong>
-                                {{ order_item.order_id.user_id.username }}
-                            </li> {% endif %}
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
+<h2>Products Sold</h2>
+<ul>
+    {% for product in products %}
+        <li><strong>Product ID:</strong> {{ product.id }}<br>
+            <strong>Product Name:</strong> {{ product.name }}
+            <ul>
+                {% for order_item in order_items1 %}
+                    {% if order_item.product_id == product %}
+                        <li>
+                            <strong>Order ID:</strong> {{ order_item.order_id.id }}<br>
+                            <strong>Ordered by User ID:</strong> {{ order_item.order_id.user_id.id }}<br>
+                            <strong>User Name:</strong> {{ order_item.order_id.user_id.username }}
+                            <form method="POST" action="{% url 'update_order_status' order_item.order_id.order_id %}">
+                                {% csrf_token %}
+                                <select name="order_status">
+                                    {% for code, name in order_item.order_id.ORDER_STATUS_CHOICES %}
+                                    <option value="{{ code }}" {% if order_item.order_id.order_status == code %}selected{% endif %}>{{ name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit">Update Status</button>
+                            </form>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
 {% endblock %}
