@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm
+from .forms import LoginForm, CustomerProfileForm, MyPasswordChangedForm
 from django.views import View
 from user_details.forms import CustomerRegistrationForm
 from django.contrib import messages
@@ -13,16 +13,16 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from product.models import Product
+from .models import Member
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 def login_view(request):
     error_message = None
     form = LoginForm()
     if request.method == 'POST':
         form = LoginForm(request.POST)
-        print("Hello")
-        print(form.is_valid())
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -62,10 +62,8 @@ class CustomerRegistrationView(View):
             messages.warning(request, 'Please correct the error below.')
         return render(request, 'registration/customerregistration.html', {'form': form})
 
-
-
 def seller_desc_view(request, user_id):
-    seller = get_object_or_404(Member, id=user_id)
+    seller = get_object_or_404(Member, user_id=user_id)
     products = Product.objects.filter(user=seller)
     return render(request, 'user_details/seller_desc.html', {'seller': seller, 'products': products})
 
@@ -122,14 +120,12 @@ def update_coins_balance(request):
             amount=quantity * 5.00  # Assuming $5.00 for 50 coins or $10.00 for 100 coins
         )
 
-
-
         return JsonResponse({'success': True})
 
 
 @login_required
 def buy_coins(request):
-    return render(request, 'user_details/payment.html',{'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY })
+    return render(request, 'user_details/payment.html', {'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY})
 
 
 class ProfileView(View):
@@ -165,4 +161,3 @@ class ProfileView(View):
         else:
             messages.warning(request, 'Please correct the error below.')
         return render(request, 'profile.html', {'form': form})
-
