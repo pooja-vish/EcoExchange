@@ -22,7 +22,7 @@ class Product(models.Model):
     product_description = models.TextField()
     image = models.ImageField(upload_to='img/')
     quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.IntegerField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     user = models.ForeignKey(Member, on_delete=models.CASCADE)
 
