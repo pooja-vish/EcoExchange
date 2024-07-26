@@ -1,6 +1,7 @@
 # views.py
 from django.contrib.auth.models import Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView
+from django.core.paginator import Paginator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,7 +10,7 @@ from .forms import LoginForm, CustomerProfileForm, MySetPasswordForm
 from django.views import View
 from user_details.forms import CustomerRegistrationForm
 from django.contrib import messages
-from .models import Member, Transaction
+from .models import Member, Transaction, UserHistory
 import json
 import stripe
 from django.conf import settings
@@ -213,6 +214,14 @@ def admin_required(login_url=None):
 @admin_required(login_url='/login/')
 def user_visit_history_view(request):
     visits = request.COOKIES.get('visits', '[]')
-    visits = json.loads(visits) if visits else []
-    return render(request, 'user_details/user_visit_history.html', {'visits': visits})
+    try:
+        visits = json.loads(visits)
+    except json.JSONDecodeError:
+        visits = []
 
+    # Implement pagination if necessary
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(visits, 10)  # Show 10 entries per page
+    page_visits = paginator.get_page(page_number)
+
+    return render(request, 'user_details/user_visit_history.html', {'visits': page_visits})

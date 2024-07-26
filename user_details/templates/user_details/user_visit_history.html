@@ -1,32 +1,43 @@
-
 {% extends 'product/base.html' %}
 {% load static %}
 {% block title %}User Visit History{% endblock title %}
 {% block body %}
     <div class="container">
-        <div class="row my-3">
-            <div class="col-sm-12">
-                <h3>User Visit History</h3>
-                <hr>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Page</th>
-                            <th>Timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for visit in visits %}
-                        <tr>
-                            <td>{{ visit.user }}</td>
-                            <td>{{ visit.path }}</td>
-                            <td>{{ visit.timestamp }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <h3>User Visit History</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Page</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for visit in visits %}
+                <tr>
+                    <td>{{ visit.user }}</td>
+                    <td>{{ visit.path }}</td>
+                    <td>{{ visit.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if visits.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ visits.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ visits.number }} of {{ visits.paginator.num_pages }}.
+                </span>
+
+                {% if visits.has_next %}
+                    <a href="?page={{ visits.next_page_number }}">next</a>
+                    <a href="?page={{ visits.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
         </div>
     </div>
 {% endblock %}
