@@ -203,9 +203,11 @@ class MyPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'user_details/password_reset_confirm.html'
     form_class = MySetPasswordForm
 
-    def get(self, request, *args, **kwargs):
-        print(f"UID: {kwargs['uidb64']}, Token: {kwargs['token']}")
-        return super().get(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['uidb64'] = self.kwargs['uidb64']
+        context['token'] = self.kwargs['token']
+        return context
 
 
 def admin_required(login_url=None):
