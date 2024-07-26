@@ -4,4 +4,4 @@ phonenumbers
 django-phonenumber-field
 stripe
 channels
-channels_redis==3.4.1
+channels-redis==3.4.1
