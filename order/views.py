@@ -1,4 +1,5 @@
 # Create your views here.
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Order, OrderItem
 from product.models import Product
@@ -6,6 +7,8 @@ from user_details.models import Member
 from django.utils import timezone
 
 
+@login_required
+@permission_required('order.view_order', raise_exception=True)
 def user_orders(request):
     try:
         member = Member.objects.get(username=request.user.username)
@@ -16,6 +19,8 @@ def user_orders(request):
     context = {'orders': orders, 'order_items': order_items}
     return render(request, 'order/user_orders.html', context)
 
+@login_required
+@permission_required('order.view_order', raise_exception=True)
 def seller_products(request):
     try:
         member = Member.objects.get(username=request.user.username)
@@ -30,6 +35,8 @@ def seller_products(request):
     return render(request, 'order/seller_products.html', context)
 
 
+@login_required
+@permission_required('order.change_order', raise_exception=True)
 def update_order_status(request, order_id):
     print("hello")
     if request.method == "POST":
