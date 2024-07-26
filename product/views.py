@@ -5,6 +5,7 @@ from user_details.models import Member
 from product.models import Product, CartItem, Auction
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView, TemplateView
 
 
 from django.views import View
@@ -79,6 +80,11 @@ class AuctionRealTimeView(TemplateView):
         context['product'] = product
         context['auction'] = auction
         return context
+
+
+def dashboard(request):
+    details = Member.objects.filter(username=request.user.username)
+    return render(request, 'product/dashboard.html', {'details': details})
 
 
 def products(request):

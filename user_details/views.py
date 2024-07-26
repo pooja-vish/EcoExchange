@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, CustomerProfileForm
+from .forms import LoginForm, CustomerProfileForm, MySetPasswordForm
 from django.views import View
 from user_details.forms import CustomerRegistrationForm
 from django.contrib import messages
@@ -98,7 +98,7 @@ class CustomerRegistrationView(View):
         return render(request, 'registration/customerregistration.html', {'form': form})
 
 def seller_desc_view(request, user_id):
-    seller = get_object_or_404(Member, user_id=user_id)
+    seller = get_object_or_404(Member, id=user_id)
     products = Product.objects.filter(user=seller)
     return render(request, 'user_details/seller_desc.html', {'seller': seller, 'products': products})
 
