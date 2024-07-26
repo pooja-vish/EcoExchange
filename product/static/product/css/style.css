@@ -93,9 +93,20 @@
 .div-left-space {
     margin-left: 40px;
 }
+.div-padding-right {
+    padding-bottom: 20px;
+}
+.div-padding {
+    padding-top: 20px;
+}
+.button-text{
+    color: black;
+
+}
 .div-space {
     margin-bottom: 30px;
     margin-left: 20px;
+    padding: 20px;
 }
 .image-div {
     width:25%;
@@ -114,6 +125,10 @@
     overflow-y: scroll;
     width: 73%;
     height: 670px;
+}
+.div-center {
+    display: flex;
+    justify-content: center;
 }
 .btn-color {
     background-color: brown;

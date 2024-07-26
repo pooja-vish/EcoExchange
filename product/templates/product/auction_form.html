@@ -1,10 +1,14 @@
 {% extends 'product/base.html' %}
 {% block body %}
-  <h1>{% if form.instance.pk %}Update{% else %}Create{% endif %} Auction</h1>
+    <div class="div-center">
+    <div class="col-lg-1 col-lg-3 bg-primary rounded div-space">
+  <h1 class="div-center div-padding-right">{% if form.instance.pk %}Update{% else %}Create{% endif %} Auction</h1>
   <form id="auction-form" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" id="submit-button">Save</button>
+      <div class="div-center div-padding">
+    <button class="btn border border-secondary rounded-pill px-3 button-text"> <i class="fa fa-spinner fa-spin"></i> Save</button>
+    </div>
   </form>
   <a href="{% url 'auction_list' %}" id="cancel-button">Cancel</a>
 
@@ -36,4 +40,6 @@
       window.location.href = '{% url "auction_list" %}';
     };
   </script>
+    </div>
+    </div>
 {% endblock %}
