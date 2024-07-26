@@ -1,5 +1,8 @@
 # views.py
+from django.contrib.auth.models import Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, CustomerProfileForm, MyPasswordChangedForm, MySetPasswordForm
@@ -10,7 +13,7 @@ from .models import Member, Transaction
 import json
 import stripe
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from product.models import Product
 from .models import Member
@@ -38,6 +41,38 @@ def login_view(request):
             print(form.errors)
 
     return render(request, 'user_details/login.html', {'form': form, 'error_message': error_message})
+
+
+@receiver(post_save, sender=Member)
+def assign_default_permissions(sender, instance, created, **kwargs):
+    if created:
+        # Define the permissions you want to assign
+        permissions = [
+            'add_product',
+            'change_product',
+            'delete_product',
+            'view_product',
+            'add_order',
+            'view_order',
+            'add_review',
+            'view_review',
+            'delete_review',
+            'view_auction',
+            'participate_auction',
+            'add_bid',
+            'view_bid',
+            'add_cartitem',
+            'view_cartitem',
+            'change_cartitem',
+            'delete_cartitem'
+        ]
+
+        for perm in permissions:
+            try:
+                permission = Permission.objects.get(codename=perm)
+                instance.user_permissions.add(permission)
+            except Permission.DoesNotExist:
+                print(f"Permission {perm} does not exist.")
 
 
 class CustomerRegistrationView(View):
@@ -172,8 +207,10 @@ class MyPasswordResetConfirmView(PasswordResetConfirmView):
         return super().get(request, *args, **kwargs)
 
 
+def admin_required(login_url=None):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
 
-@login_required
+@admin_required(login_url='/login/')
 def user_visit_history_view(request):
     visits = request.COOKIES.get('visits', '[]')
     visits = json.loads(visits) if visits else []
