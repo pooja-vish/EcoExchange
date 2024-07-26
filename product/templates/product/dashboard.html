@@ -3,46 +3,109 @@
 {% block body %}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            initializeSidebarMenu();
+        });
+
+        function initializeSidebarMenu() {
+            const links = document.querySelectorAll('.sidebar-menu a');
+            links.forEach(link => {
                 link.addEventListener('click', function (event) {
                     event.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    document.querySelectorAll('.content-section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-                    document.getElementById(targetId).classList.add('active');
+                    const targetSection = this.getAttribute('data-target');
+                    if (targetSection === 'orders') {
+                        window.location.href = '/orders/';
+                    }
+                    if(targetSection === 'onsale'){
+                        window.location.href = '/onsale/';
+                    }
+                    else {
+                        fetchContent(targetSection);
+                    }
                 });
             });
-        });
+        }
+
+        function fetchContent(section) {
+            fetch(`/dashboard/${section}/`)
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('.content-section').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading content:', error);
+                });
+        }
     </script>
+
     <div style="display: flex">
-        <div class="sidebar">
+        <div class="sidebar" style="width: 25%;">
             <div class="sidebar-header">
                 <h3>Hello User</h3>
             </div>
             <ul class="sidebar-menu" style="list-style-type: none">
-                <li><a href="#dashboard">Dashboard</a></li>
-                <li><a href="#edit">Edit Profile</a></li>
-                <li><a href="#orders">Orders</a></li>
-                <li><a href="#coins">Coin History</a></li>
+                <li><a href="#home" data-target="home" >Dashboard</a></li>
+                <li><a href="#edit" data-target="edit">Edit Profile</a></li>
+                <li><a href="#orders" data-target="orders">Your Orders</a></li>
+                <li><a href="#onsale" data-target="onsale">Your Products</a></li>
+                <li><a href="#coins" data-target="coins">Coin History</a></li>
             </ul>
         </div>
-        <div class="content" style="display: block">
-            <div id="dashboard" class="content-section active">
-                <h1>Welcome to the Home Page</h1>
-                <p>This is the home page content.</p>
+        <div class="content" style="display: block; width: 70%">
+            <div id="home" class="content-section active">
+                <h1>Welcome {{ details.username }}</h1>
+                <table style="width: 80%; border-collapse: collapse; margin: 20px 0;">
+                    <tr>
+                        <th style="width:40%; padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                            First Name
+                        </th>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th style=" width:40%; padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                            Last Name
+                        </th>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                            Email
+                        </th>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.email }}</td>
+                    </tr>
+                    <tr>
+                        <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4; width: 50%;">
+                            Mobile Number
+                        </th>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.mobile_no }}</td>
+                    </tr>
+                    <tr>
+                        <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                            Address
+                        </th>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.address }}</td>
+                    </tr>
+                    <tr>
+                        <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                            Available Coins
+                        </th>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.coin_balance }}</td>
+                    </tr>
+                </table>
             </div>
             <div id="edit" class="content-section">
-                <h1>Edit Profile</h1>
-                <p>This is the Edit Profile content.</p>
+
             </div>
             <div id="orders" class="content-section">
                 <h1>Orders</h1>
                 <p>This is the orders content.</p>
             </div>
             <div id="coins" class="content-section">
-                <h1>Coins</h1>
+                <h1>Coin History</h1>
                 <p>This is the coins content.</p>
+            </div>
+            <div id="onsale" class="content-section">
+                <h1>Your Products</h1>
+                <p>This is your product content.</p>
             </div>
         </div>
     </div>

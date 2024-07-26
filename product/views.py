@@ -4,6 +4,9 @@ from django.utils.text import Truncator
 from user_details.models import Member
 from product.models import Product, CartItem, Auction
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.views import View
+from .forms import AuctionForm, EditProfileForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, TemplateView
 
@@ -100,9 +103,25 @@ def dashboard(request):
 
 
 def products(request):
-    product_list = Product.objects.all()
+    products = []
+    sort_by = request.GET.get('sort', 'name')
+    if sort_by == 'name':
+        sort_by = 'product_name'
+    if sort_by == 'byprice':
+        sort_by = 'price'
+    if sort_by == 'pricedesc':
+        sort_by = '-price'
+    if sort_by:
+        product_list = Product.objects.all().order_by(sort_by)
+
+    input_range = request.GET.get('rangeInput')
+    if input_range:
+        print('a gaya yaha')
+        product_list = Product.objects.filter(price__lte=input_range)
+
+    #product_list = Product.objects.all().order_by(sort_by)
     for product in product_list:
-        product.short_description = Truncator(product.product_description).chars(125)
+        product.short_description = Truncator(product.product_description).chars(120)
     return render(request, template_name='product/product_list.html', context={'product_list': product_list})
 
 
@@ -308,6 +327,37 @@ def auction_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     auction = get_object_or_404(Auction, product=product)
     return render(request, 'product/auction.html', {'product': product, 'auction': auction})
+
+
+def dashboard(request, section):
+    if section == 'home':
+        details = Member.objects.get(username=request.user.username)
+        return render(request, 'product/dashboard.html', {'details': details})
+    elif section == 'edit':
+        details = Member.objects.get(username=request.user.username)
+        return render(request, 'product/editprofile.html', {'details': details})
+    elif section == 'edit_profile':
+        if request.method == 'POST':
+            user_profile = Member.objects.get(username=request.user)
+            form = EditProfileForm(request.POST, instance=user_profile)
+            if form.is_valid():
+                name = request.POST.get('first_name')
+                lastname = request.POST.get('last_name')
+                email = request.POST.get('email')
+                mobile = request.POST.get('mobile')
+                address = request.POST.get('address')
+                form.save()
+            return redirect('dashboard', section='home')
+        else:
+            details = Member.objects.get(username=request.user.username)
+            return render(request, 'product/editprofile.html', {'details': details})
+    elif section == 'orders':
+        return render(request, 'product/dashboard.html')
+    elif section == 'coins':
+        coins_history = Member.objects.get(username=request.user.username)
+        return render(request, 'product/coin_history.html',{'coins_history': coins_history} )
+    else:
+        html = '<p>Content not found.</p>'
 
 
 @login_required
