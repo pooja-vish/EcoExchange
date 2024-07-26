@@ -1,8 +1,11 @@
 # views.py
-
+from django.contrib.auth.models import Permission, User
+from django.contrib.auth.views import PasswordResetConfirmView
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import LoginForm, CustomerProfileForm
+from .forms import LoginForm, CustomerProfileForm, MySetPasswordForm
 from django.views import View
 from user_details.forms import CustomerRegistrationForm
 from django.contrib import messages
@@ -10,19 +13,19 @@ from .models import Member, Transaction
 import json
 import stripe
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from product.models import Product
+from .models import Member
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 def login_view(request):
     error_message = None
     form = LoginForm()
     if request.method == 'POST':
         form = LoginForm(request.POST)
-        print("Hello")
-        print(form.is_valid())
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -38,6 +41,38 @@ def login_view(request):
             print(form.errors)
 
     return render(request, 'user_details/login.html', {'form': form, 'error_message': error_message})
+
+
+@receiver(post_save, sender=Member)
+def assign_default_permissions(sender, instance, created, **kwargs):
+    if created:
+        # Define the permissions you want to assign
+        permissions = [
+            'add_product',
+            'change_product',
+            'delete_product',
+            'view_product',
+            'add_order',
+            'view_order',
+            'add_review',
+            'view_review',
+            'delete_review',
+            'view_auction',
+            'participate_auction',
+            'add_bid',
+            'view_bid',
+            'add_cartitem',
+            'view_cartitem',
+            'change_cartitem',
+            'delete_cartitem'
+        ]
+
+        for perm in permissions:
+            try:
+                permission = Permission.objects.get(codename=perm)
+                instance.user_permissions.add(permission)
+            except Permission.DoesNotExist:
+                print(f"Permission {perm} does not exist.")
 
 
 class CustomerRegistrationView(View):
@@ -61,8 +96,6 @@ class CustomerRegistrationView(View):
             # If form is not valid, render the registration page again with the form and errors
             messages.warning(request, 'Please correct the error below.')
         return render(request, 'registration/customerregistration.html', {'form': form})
-
-
 
 def seller_desc_view(request, user_id):
     seller = get_object_or_404(Member, id=user_id)
@@ -122,14 +155,12 @@ def update_coins_balance(request):
             amount=quantity * 5.00  # Assuming $5.00 for 50 coins or $10.00 for 100 coins
         )
 
-
-
         return JsonResponse({'success': True})
 
 
 @login_required
 def buy_coins(request):
-    return render(request, 'user_details/payment.html',{'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY })
+    return render(request, 'user_details/payment.html', {'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLISHABLE_KEY})
 
 
 class ProfileView(View):
@@ -165,4 +196,23 @@ class ProfileView(View):
         else:
             messages.warning(request, 'Please correct the error below.')
         return render(request, 'user_details/profile.html', {'form': form})
+
+
+class MyPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'user_details/password_reset_confirm.html'
+    form_class = MySetPasswordForm
+
+    def get(self, request, *args, **kwargs):
+        print(f"UID: {kwargs['uidb64']}, Token: {kwargs['token']}")
+        return super().get(request, *args, **kwargs)
+
+
+def admin_required(login_url=None):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
+
+@admin_required(login_url='/login/')
+def user_visit_history_view(request):
+    visits = request.COOKIES.get('visits', '[]')
+    visits = json.loads(visits) if visits else []
+    return render(request, 'user_details/user_visit_history.html', {'visits': visits})
 

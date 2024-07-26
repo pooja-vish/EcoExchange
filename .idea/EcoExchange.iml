@@ -17,11 +17,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/myenv" />
     </content>
-<<<<<<< HEAD
     <orderEntry type="jdk" jdkName="Python 3.12 (EcoExchange)" jdkType="Python SDK" />
-=======
-    <orderEntry type="jdk" jdkName="Python 3.11 (djangoProject)" jdkType="Python SDK" />
->>>>>>> order
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jquery-3.6.0" level="application" />
   </component>
