@@ -60,6 +60,19 @@ class AuctionDeleteView(View):
         return JsonResponse({'success': True})
 
 
+class AuctionAllListView(ListView):
+    model = Auction
+    template_name = 'product/auctions.html'
+    context_object_name = 'auctions'
+
+    def get_queryset(self):
+        return Auction.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['auctions'] = self.get_queryset()
+        return context
+
 class AuctionListView(ListView):
     model = Auction
     template_name = 'product/auction_list.html'
@@ -359,6 +372,7 @@ def auction_view(request, product_id):
     return render(request, 'product/auction.html', {'product': product, 'auction': auction})
 
 
+@login_required
 def dashboard(request, section):
     if section == 'home':
         details = Member.objects.get(username=request.user.username)
