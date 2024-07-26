@@ -4,7 +4,7 @@ from django.utils.text import Truncator
 from user_details.models import Member
 from product.models import Product, CartItem, Auction
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, TemplateView
 
 
@@ -18,10 +18,14 @@ from order.models import Order, OrderItem
 from django.db import transaction
 
 class AuctionCreateView(View):
+    @login_required
+    @permission_required('product.add_auction', raise_exception=True)
     def get(self, request):
         form = AuctionForm()
         return render(request, 'product/auction_form.html', {'form': form})
 
+    @login_required
+    @permission_required('product.add_auction', raise_exception=True)
     def post(self, request):
         form = AuctionForm(request.POST)
         if form.is_valid():
@@ -31,11 +35,15 @@ class AuctionCreateView(View):
 
 
 class AuctionUpdateView(View):
+    @login_required
+    @permission_required('product.change_auction', raise_exception=True)
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction)
         return render(request, 'product/auction_form.html', {'form': form})
 
+    @login_required
+    @permission_required('product.change_auction', raise_exception=True)
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(request.POST, instance=auction)
@@ -46,6 +54,8 @@ class AuctionUpdateView(View):
 
 
 class AuctionDeleteView(View):
+    @login_required
+    @permission_required('product.delete_auction', raise_exception=True)
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         auction.delete()
@@ -56,6 +66,7 @@ class AuctionListView(ListView):
     model = Auction
     template_name = 'product/auction_list.html'
 
+    @login_required
     def get_queryset(self):
         try:
             member = Member.objects.get(username=self.request.user.username)
@@ -82,6 +93,7 @@ class AuctionRealTimeView(TemplateView):
         return context
 
 
+@login_required
 def dashboard(request):
     details = Member.objects.filter(username=request.user.username)
     return render(request, 'product/dashboard.html', {'details': details})
@@ -95,6 +107,7 @@ def products(request):
 
 
 @login_required
+@permission_required('product.add_cartitem', raise_exception=True)
 def add_to_cart(request, product_id):
     try:
         member = Member.objects.get(username=request.user.username)
@@ -115,6 +128,8 @@ def add_to_cart(request, product_id):
     return JsonResponse({'message': 'Failed to add item to the cart.'}, status=400)
 
 
+@login_required
+@permission_required('product.add_cartitem', raise_exception=True)
 def addtocart(request, product_id):
     try:
         member = Member.objects.get(username=request.user.username)
@@ -135,6 +150,7 @@ def addtocart(request, product_id):
 
 
 @login_required
+@permission_required('product.add_cartitem', raise_exception=True)
 def add_item_to_cart(request, product_id):
 
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
@@ -174,6 +190,7 @@ def add_item_to_cart(request, product_id):
 
 
 @login_required
+@permission_required('product.delete_cartitem', raise_exception=True)
 def remove_item_from_cart(request, item_id):
     print("hello")
     print("hi")
@@ -207,6 +224,7 @@ def remove_item_from_cart(request, item_id):
 
 
 @login_required
+@permission_required('product.delete_cartitem', raise_exception=True)
 def delete_item_from_cart(request, item_id):
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     try:
@@ -229,6 +247,7 @@ def delete_item_from_cart(request, item_id):
 
 
 @login_required
+@permission_required('product.view_cartitem', raise_exception=True)
 def cart_detail(request):
     # Fetch the Member instance using the username of the logged-in user
     try:
@@ -262,6 +281,8 @@ def homepage(request):
     return render(request, template_name='product/homepage.html', context={'categories_list': distinct_categories})
 
 
+@login_required
+@permission_required('product.view_product', raise_exception=True)
 def product_detail(request, pk):
     try:
         member = Member.objects.get(username=request.user.username)
@@ -281,13 +302,16 @@ def product_detail(request, pk):
 def aboutus(request):
     return render(request, 'product/aboutus.html')
 
-
+@login_required
+@permission_required('product.view_auction', raise_exception=True)
 def auction_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     auction = get_object_or_404(Auction, product=product)
     return render(request, 'product/auction.html', {'product': product, 'auction': auction})
 
 
+@login_required
+@permission_required('order.add_order', raise_exception=True)
 def checkout(request):
     try:
         member = Member.objects.get(username=request.user.username)
