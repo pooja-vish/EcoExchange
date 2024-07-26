@@ -1,2 +1,20 @@
 <h2>Coin Transaction History</h2>
-<h3>Balance : {{ coins_history.coin_balance }}</h3>
+
+    <table style="width: 80%; border-collapse: collapse; margin: 20px 0;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;"> Transaction Id </th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;"> Date </th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;"> Quantity </th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;"> Amount </th>
+        </tr>
+         {% for history in coins_history %}
+    <tr>
+
+        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ history.transaction_id }}</td>
+        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ history.date }}</td>
+        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ history.quantity }}</td>
+        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ history.amount }}</td>
+    </tr>
+             {% endfor %}
+            </table>
+

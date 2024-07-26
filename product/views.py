@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
-from user_details.models import Member
+from user_details.models import Member, Transaction
 from product.models import Product, CartItem, Auction
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -354,8 +354,16 @@ def dashboard(request, section):
     elif section == 'orders':
         return render(request, 'product/dashboard.html')
     elif section == 'coins':
-        coins_history = Member.objects.get(username=request.user.username)
-        return render(request, 'product/coin_history.html',{'coins_history': coins_history} )
+         user = Member.objects.get(username=request.user.username)
+         print('user:', user)
+         coins_history = Transaction.objects.filter(user=user)
+         print('coins_history:', coins_history)
+         for history in coins_history:
+             print(history.transaction_id)
+             print(history.date)
+             print(history.amount)
+             print(history.quantity)
+         return render(request, 'product/coin_history.html',{'coins_history': coins_history})
     else:
         html = '<p>Content not found.</p>'
 
