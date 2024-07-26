@@ -401,7 +401,10 @@
 .fruite .fruite-categorie .fruite-name a:hover {
     color: var(--bs-secondary);
 }
+.close-btn {
+            color: black;
 
+}
 .fruite .fruite-item {
     height: 100%;
     transition: 0.5s;
