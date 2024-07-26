@@ -21,14 +21,12 @@ from order.models import Order, OrderItem
 from django.db import transaction
 
 class AuctionCreateView(View):
-    @login_required
-    @permission_required('product.add_auction', raise_exception=True)
+
     def get(self, request):
         form = AuctionForm()
         return render(request, 'product/auction_form.html', {'form': form})
 
-    @login_required
-    @permission_required('product.add_auction', raise_exception=True)
+
     def post(self, request):
         form = AuctionForm(request.POST)
         if form.is_valid():
@@ -38,15 +36,13 @@ class AuctionCreateView(View):
 
 
 class AuctionUpdateView(View):
-    @login_required
-    @permission_required('product.change_auction', raise_exception=True)
+
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction)
         return render(request, 'product/auction_form.html', {'form': form})
 
-    @login_required
-    @permission_required('product.change_auction', raise_exception=True)
+
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(request.POST, instance=auction)
@@ -57,8 +53,7 @@ class AuctionUpdateView(View):
 
 
 class AuctionDeleteView(View):
-    @login_required
-    @permission_required('product.delete_auction', raise_exception=True)
+
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         auction.delete()
@@ -69,7 +64,7 @@ class AuctionListView(ListView):
     model = Auction
     template_name = 'product/auction_list.html'
 
-    @login_required
+
     def get_queryset(self):
         try:
             member = Member.objects.get(username=self.request.user.username)
@@ -139,7 +134,7 @@ def add_to_cart(request, product_id):
 
         cart_item, created = CartItem.objects.get_or_create(user=member, product=product)
         if product.quantity - cart_item.quantity > 0:
-            cart_item.quantity += 1
+            cart_item.quantity  = quantity
             cart_item.save()
             success = True
             message = 'Item has been added to cart'
