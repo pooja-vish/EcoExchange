@@ -417,11 +417,10 @@
 }
 
 .image-container {
-    width: 200px; /* Fixed width of the container */
-    height: 200px; /* Fixed height of the container */
+    width: 300px; /* Fixed width of the container */
+    height: 300px; /* Fixed height of the container */
     overflow: hidden; /* Ensure image does not overflow */
 }
->>>>>>> main
 .fruite .fruite-item .fruite-img img {
     transition: 0.5s;
 }
@@ -613,4 +612,59 @@
 .content-section.active {
     display: block;
 }
+/* Container for the form */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Flex container for each form group */
+.form-group {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+/* Label styles */
+.form-group label {
+    flex: 0 0 150px; /* Adjust the width as needed */
+    font-weight: bold;
+    margin-right: 10px;
+    display: flex;
+    align-items: center; /* Center label text vertically */
+}
+
+/* Input styles */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group select,
+.form-group textarea {
+    flex: 1; /* Take the remaining space */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Submit button styles */
+.form-container button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px; /* Space between form and button */
+}
+
+.form-container button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
 

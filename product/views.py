@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
@@ -7,6 +6,7 @@ from product.models import Product, CartItem, Auction
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, TemplateView
+
 
 from django.views import View
 from .forms import AuctionForm
@@ -17,13 +17,15 @@ from coins.models import Coins
 from order.models import Order, OrderItem
 from django.db import transaction
 
-
-class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
-
+class AuctionCreateView(View):
+    @login_required
+    @permission_required('product.add_auction', raise_exception=True)
     def get(self, request):
         form = AuctionForm()
         return render(request, 'product/auction_form.html', {'form': form})
 
+    @login_required
+    @permission_required('product.add_auction', raise_exception=True)
     def post(self, request):
         form = AuctionForm(request.POST)
         if form.is_valid():
@@ -32,15 +34,17 @@ class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return JsonResponse({'success': False, 'errors': form.errors})
 
 
-class AuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
-
-   def get(self, request, pk):
+class AuctionUpdateView(View):
+    @login_required
+    @permission_required('product.change_auction', raise_exception=True)
+    def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction)
         return render(request, 'product/auction_form.html', {'form': form})
 
-
-def post(self, request, pk):
+    @login_required
+    @permission_required('product.change_auction', raise_exception=True)
+    def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(request.POST, instance=auction)
         if form.is_valid():
@@ -49,17 +53,20 @@ def post(self, request, pk):
         return JsonResponse({'success': False, 'errors': form.errors})
 
 
-class AuctionDeleteView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
+class AuctionDeleteView(View):
+    @login_required
+    @permission_required('product.delete_auction', raise_exception=True)
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         auction.delete()
         return JsonResponse({'success': True})
 
 
-class AuctionListView(LoginRequiredMixin, ListView):
+class AuctionListView(ListView):
     model = Auction
     template_name = 'product/auction_list.html'
 
+    @login_required
     def get_queryset(self):
         try:
             member = Member.objects.get(username=self.request.user.username)
@@ -145,6 +152,7 @@ def addtocart(request, product_id):
 @login_required
 @permission_required('product.add_cartitem', raise_exception=True)
 def add_item_to_cart(request, product_id):
+
     is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     try:
         member = Member.objects.get(username=request.user.username)
@@ -166,6 +174,7 @@ def add_item_to_cart(request, product_id):
         message = 'Sorry, this product is currently unavailable.'
 
     if is_ajax:
+
         subtotal = sum(item.get_total_price() for item in CartItem.objects.filter(user=member))
         total_price = subtotal
         return JsonResponse({
@@ -204,11 +213,11 @@ def remove_item_from_cart(request, item_id):
         subtotal = sum(item.get_total_price() for item in CartItem.objects.filter(user=member))
         total_price = subtotal  # Assuming flat shipping rate of $3
         return JsonResponse({
-            'success': True,
-            'quantity': cart_item.quantity if cart_item.id else 0,
-            'total': cart_item.get_total_price() if cart_item.id else 0,
-            'subtotal': subtotal,
-            'total_price': total_price
+                'success': True,
+                'quantity': cart_item.quantity if cart_item.id else 0,
+                'total': cart_item.get_total_price() if cart_item.id else 0,
+                'subtotal': subtotal,
+                'total_price': total_price
         })
 
     return redirect('cart_detail')
@@ -293,7 +302,6 @@ def product_detail(request, pk):
 def aboutus(request):
     return render(request, 'product/aboutus.html')
 
-
 @login_required
 @permission_required('product.view_auction', raise_exception=True)
 def auction_view(request, product_id):
@@ -326,28 +334,29 @@ def checkout(request):
                 member.save()
 
                 # Create order
-                order_now = Order.objects.create(
-                    user_id=member,
+                order_now=Order.objects.create(
+                    user_id = member,
                     # order_date = timezone.now
-                    order_amount=total_cost,
+                    order_amount = total_cost,
                 )
                 for item in cart_items:
                     OrderItem.objects.create(
                         order_id=order_now,
-                        product_id=item.product,
-                        quantity=item.quantity
+                        product_id = item.product,
+                        quantity = item.quantity
                     )
 
-            #        # success_message = "Order placed successfully!"
-            #         messages.success(request, 'Order placed successfully!')
-            #         return redirect('checkout')
-            #
-            # return render(request, 'product/checkout.html', {
-            #     'cart_items': item_totals,
-            #     'total_cost': total_cost,
-            #     'success_message': success_message,
-            #     'error_message': 'Insufficient coins to complete the purchase.' if request.method == 'POST' and member.coin_balance < total_cost else None
-            # })
+
+    #        # success_message = "Order placed successfully!"
+    #         messages.success(request, 'Order placed successfully!')
+    #         return redirect('checkout')
+    #
+    # return render(request, 'product/checkout.html', {
+    #     'cart_items': item_totals,
+    #     'total_cost': total_cost,
+    #     'success_message': success_message,
+    #     'error_message': 'Insufficient coins to complete the purchase.' if request.method == 'POST' and member.coin_balance < total_cost else None
+    # })
             messages.success(request, 'Order placed successfully!')
             return redirect('checkout')
 
@@ -355,6 +364,6 @@ def checkout(request):
             messages.error(request, 'Insufficient coins to complete the purchase.')
 
     return render(request, 'product/checkout.html', {
-        'cart_items': item_totals,
-        'total_cost': total_cost,
+            'cart_items': item_totals,
+            'total_cost': total_cost,
     })
