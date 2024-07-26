@@ -10,7 +10,8 @@
             <form action="{% url 'user_details:login_details' %}" method="post" novalidate class="shadow p-5">
                 {% csrf_token %}
                {{ form.as_p }}
-            <small> <a>Forgot Password ?</a>
+            <small>
+             <a href="{% url 'user_details:password_reset' %}">Forgot Password?</a>
             </small>
             <br>
             <input type="submit" class="btn btn-primary mt-4" value="Login">
