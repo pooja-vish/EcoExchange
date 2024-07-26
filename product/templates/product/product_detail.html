@@ -5,9 +5,10 @@
     <div class="container">
         <div class="row my-3">
             <div class="col-sm-8 offset-sm-2">
+
                 <h3>{{ product.product_name }}</h3>
                 <hr>
-                <div class="shadow p-5">
+                <div class="shadow p-5" data-product-quantity="{{ product.quantity }}">
                     <div class="text-center">
                         <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="img-fluid mb-3">
                     </div>
@@ -44,10 +45,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#increase').click(function() {
-                var quantity = parseInt($('#quantity').val());
+        var maxQuantity = parseInt($('.shadow').data('product-quantity'));
+
+        $('#increase').click(function() {
+            var quantity = parseInt($('#quantity').val());
+            if (quantity < maxQuantity) {
                 $('#quantity').val(quantity + 1);
-            });
+            } else {
+                alert('Sorry, only ' + maxQuantity + ' items are in stock.');
+            }
+        });
 
             $('#decrease').click(function() {
                 var quantity = parseInt($('#quantity').val());
