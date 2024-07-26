@@ -40,7 +40,7 @@
     <div style="display: flex">
         <div class="sidebar" style="width: 25%;">
             <div class="sidebar-header">
-                <h3>Hello User</h3>
+                <h3>Hello {{ details.first_name  }} {{  details.last_name }}</h3>
             </div>
             <ul class="sidebar-menu" style="list-style-type: none">
                 <li><a href="#home" data-target="home" >Dashboard</a></li>
@@ -52,7 +52,7 @@
         </div>
         <div class="content" style="display: block; width: 70%">
             <div id="home" class="content-section active">
-                <h1>Welcome {{ details.username }}</h1>
+                <h1>Welcome to your profile</h1>
                 <table style="width: 80%; border-collapse: collapse; margin: 20px 0;">
                     <tr>
                         <th style="width:40%; padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
