@@ -3,7 +3,7 @@ from django.contrib import messages
 from product.models import Product
 from product_crud.forms import ProductForm
 from user_details.models import Member
-
+from django.utils.text import Truncator
 
 def product_details(request):
     form = ProductForm()
@@ -34,6 +34,8 @@ def product_details(request):
     else:
         form = ProductForm()
     products = Product.objects.filter(user=request.user)
+    for product in products:
+        product.short_description = Truncator(product.product_description).chars(125)
     categories = Product.objects.values_list('category', flat=True).distinct()
     return render(request, 'products_crud/products_crud.html', {'form': form, 'products': products, 'categories': categories})
 
