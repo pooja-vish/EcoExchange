@@ -25,7 +25,7 @@ class Order(models.Model):
     order_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(Member, on_delete=models.CASCADE)
     order_date = models.DateField(default=timezone.now)
-    order_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    order_amount = models.IntegerField()
     order_status = models.CharField(max_length=1, choices=ORDER_STATUS_CHOICES, default='P')
 
     def __str__(self):
