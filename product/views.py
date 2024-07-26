@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 from django.views import View
-from .forms import AuctionForm
+from .forms import AuctionForm, EditProfileForm
 from django.views.generic import ListView, TemplateView
 
 
@@ -293,7 +293,34 @@ def auction_view(request, product_id):
     return render(request, 'product/auction.html', {'product': product, 'auction': auction})
 
 
-def dashboard(request):
-    details = Member.objects.filter(username=request.user.username)
-    return render(request, 'product/dashboard.html', {'details': details})
+def dashboard(request, section):
+    if section == 'home':
+        details = Member.objects.get(username=request.user.username)
+        return render(request, 'product/dashboard.html', {'details': details})
+    elif section == 'edit':
+        details = Member.objects.get(username=request.user.username)
+        return render(request, 'product/editprofile.html', {'details': details})
+    elif section == 'edit_profile':
+        if request.method == 'POST':
+            user_profile = Member.objects.get(username=request.user)
+            form = EditProfileForm(request.POST, instance=user_profile)
+            if form.is_valid():
+                name = request.POST.get('first_name')
+                lastname = request.POST.get('last_name')
+                email = request.POST.get('email')
+                mobile = request.POST.get('mobile')
+                address = request.POST.get('address')
+                form.save()
+            return redirect('dashboard', section='home')
+        else:
+            details = Member.objects.get(username=request.user.username)
+            return render(request, 'product/editprofile.html', {'details': details})
+    elif section == 'orders':
+        return render(request, 'product/dashboard.html')
+    elif section == 'coins':
+        coins_history = Member.objects.get(username=request.user.username)
+        return render(request, 'product/coin_history.html',{'coins_history': coins_history} )
+    else:
+        html = '<p>Content not found.</p>'
+
 
