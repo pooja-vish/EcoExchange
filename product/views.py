@@ -355,14 +355,7 @@ def dashboard(request, section):
         return render(request, 'product/dashboard.html')
     elif section == 'coins':
          user = Member.objects.get(username=request.user.username)
-         print('user:', user)
          coins_history = Transaction.objects.filter(user=user)
-         print('coins_history:', coins_history)
-         for history in coins_history:
-             print(history.transaction_id)
-             print(history.date)
-             print(history.amount)
-             print(history.quantity)
          return render(request, 'product/coin_history.html',{'coins_history': coins_history})
     else:
         html = '<p>Content not found.</p>'
