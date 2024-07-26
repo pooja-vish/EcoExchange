@@ -3,53 +3,48 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
 from user_details.models import Member, Transaction
 from product.models import Product, CartItem, Auction
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from django.views import View
+
 from .forms import AuctionForm, EditProfileForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, TemplateView
 
-
 from django.views import View
-from .forms import AuctionForm
-from django.views.generic import ListView
-# adding these
 from django.contrib import messages
 from coins.models import Coins
 from order.models import Order, OrderItem
 from django.db import transaction
 
+
 class AuctionCreateView(View):
-
     def get(self, request):
-        form = AuctionForm()
-        return render(request, 'product/auction_form.html', {'form': form})
-
+        form = AuctionForm(user=request.user)  # Pass the user to the form
+        auctions = Auction.objects.filter(product__user=request.user)  # Filter auctions based on the logged-in user
+        return render(request, 'product/auction_form.html', {'form': form, 'auctions': auctions})
 
     def post(self, request):
-        form = AuctionForm(request.POST)
+        form = AuctionForm(request.POST, user=request.user)  # Pass the user to the form
         if form.is_valid():
             form.save()
             return JsonResponse({'success': True})
-        return JsonResponse({'success': False, 'errors': form.errors})
+        auctions = Auction.objects.filter(product__user=request.user)  # Filter auctions based on the logged-in user
+        return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
 class AuctionUpdateView(View):
-
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
-        form = AuctionForm(instance=auction)
-        return render(request, 'product/auction_form.html', {'form': form})
-
+        form = AuctionForm(instance=auction, user=request.user)  # Pass the user to the form
+        auctions = Auction.objects.filter(product__user=request.user)  # Filter auctions based on the logged-in user
+        return render(request, 'product/auction_form.html', {'form': form, 'auctions': auctions})
 
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
-        form = AuctionForm(request.POST, instance=auction)
+        form = AuctionForm(request.POST, instance=auction, user=request.user)  # Pass the user to the form
         if form.is_valid():
             form.save()
             return JsonResponse({'success': True})
-        return JsonResponse({'success': False, 'errors': form.errors})
+        auctions = Auction.objects.filter(product__user=request.user)  # Filter auctions based on the logged-in user
+        return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
 class AuctionDeleteView(View):
@@ -62,16 +57,18 @@ class AuctionDeleteView(View):
 
 class AuctionAllListView(ListView):
     model = Auction
-    template_name = 'product/auctions.html'
-    context_object_name = 'auctions'
+    template_name = 'product/all_auctions.html'
+    context_object_name = 'all_auctions'
 
     def get_queryset(self):
-        return Auction.objects.all()
+        user = self.request.user
+        return Auction.objects.exclude(product__user=user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['auctions'] = self.get_queryset()
         return context
+
 
 class AuctionListView(ListView):
     model = Auction

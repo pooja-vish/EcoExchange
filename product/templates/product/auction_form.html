@@ -1,45 +1,118 @@
 {% extends 'product/base.html' %}
 {% block body %}
-    <div class="div-center">
-    <div class="col-lg-1 col-lg-3 bg-primary rounded div-space">
-  <h1 class="div-center div-padding-right">{% if form.instance.pk %}Update{% else %}Create{% endif %} Auction</h1>
-  <form id="auction-form" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-      <div class="div-center div-padding">
-    <button class="btn border border-secondary rounded-pill px-3 button-text"> <i class="fa fa-spinner fa-spin"></i> Save</button>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="bg-primary rounded p-4">
+                <h1 class="text-white mb-4">{% if form.instance.pk %}Update{% else %}Create{% endif %} Auction</h1>
+                <form id="auction-form" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="text-center mt-4">
+                        <button class="btn btn-light border border-secondary rounded-pill px-3 button-text">
+                            <i class="fa fa-spinner fa-spin"></i> Save
+                        </button>
+                    </div>
+                </form>
+                <a href="{% url 'auction_list' %}" id="cancel-button" class="btn btn-danger mt-2">Cancel</a>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <h2 class="mb-4">List of Auctions</h2>
+            <div class="row g-4">
+                {% for auction in auctions %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="rounded position-relative fruite-item">
+                            <div class="fruite-img image-container">
+                                <img src="{{ auction.product.image.url }}" alt="{{ auction.product.image }}" class="img-fluid w-100 rounded-top">
+                            </div>
+                            <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">{{ auction.product.category }}</div>
+                            <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                <h4>{{ auction.product.product_name }}</h4>
+                                <p>{{ auction.product.short_description }}</p>
+                                <p>Quantity: {{ auction.product.quantity }}</p>
+                                <p class="text-dark fs-5 fw-bold mb-0">Coins: {{ auction.product.price }}</p>
+                                <div class="d-flex justify-content-between flex-lg-wrap">
+                                    <a href="{% url 'product_detail' auction.product.product_id %}" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                        <i class="fa fa-eye me-2 text-primary"></i> View Detail
+                                    </a>
+                                    <button class="btn btn-danger border border-secondary rounded-pill px-3 delete-button" data-id="{{ auction.pk }}">
+                                        <i class="fa fa-trash me-2 text-danger"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-  </form>
-  <a href="{% url 'auction_list' %}" id="cancel-button">Cancel</a>
+</div>
 
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Initialize flatpickr for the existing start and end time fields
+    flatpickr("#id_start_time", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });
+    flatpickr("#id_end_time", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+    });
+
+    // Form submission handling
     document.getElementById('auction-form').onsubmit = function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const actionUrl = this.action;
+        e.preventDefault();
+        const formData = new FormData(this);
+        const actionUrl = this.action;
 
-      fetch(actionUrl, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          window.location.href = '{% url "auction_list" %}';
-        } else {
-          alert('Error: ' + JSON.stringify(data.errors));
-        }
-      })
-      .catch(error => console.error('Error:', error));
+        fetch(actionUrl, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '{% url "auction_list" %}';
+            } else {
+                alert('Error: ' + JSON.stringify(data.errors));
+            }
+        })
+        .catch(error => console.error('Error:', error));
     };
 
     document.getElementById('cancel-button').onclick = function(e) {
-      window.location.href = '{% url "auction_list" %}';
+        window.location.href = '{% url "auction_list" %}';
     };
-  </script>
-    </div>
-    </div>
+
+    // Delete button handling
+    document.querySelectorAll('.delete-button').forEach(button => {
+        button.onclick = function() {
+            const auctionId = this.getAttribute('data-id');
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch(`/delete-auction/${auctionId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + JSON.stringify(data.errors));
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        };
+    });
+</script>
 {% endblock %}
