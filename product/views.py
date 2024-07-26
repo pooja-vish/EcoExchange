@@ -1,12 +1,10 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
-from user_details.models import Member, Transaction
+from user_details.models import Member
 from product.models import Product, CartItem, Auction
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from django.views import View
-from .forms import AuctionForm, EditProfileForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, TemplateView
 
@@ -20,7 +18,7 @@ from coins.models import Coins
 from order.models import Order, OrderItem
 from django.db import transaction
 
-class AuctionCreateView(View):
+class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
     def get(self, request):
         form = AuctionForm()
@@ -35,13 +33,12 @@ class AuctionCreateView(View):
         return JsonResponse({'success': False, 'errors': form.errors})
 
 
-class AuctionUpdateView(View):
+class AuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
 
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction)
         return render(request, 'product/auction_form.html', {'form': form})
-
 
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
@@ -52,7 +49,7 @@ class AuctionUpdateView(View):
         return JsonResponse({'success': False, 'errors': form.errors})
 
 
-class AuctionDeleteView(View):
+class AuctionDeleteView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
@@ -60,10 +57,9 @@ class AuctionDeleteView(View):
         return JsonResponse({'success': True})
 
 
-class AuctionListView(ListView):
+class AuctionListView(LoginRequiredMixin, ListView):
     model = Auction
     template_name = 'product/auction_list.html'
-
 
     def get_queryset(self):
         try:
@@ -98,32 +94,15 @@ def dashboard(request):
 
 
 def products(request):
-    products = []
-    sort_by = request.GET.get('sort', 'name')
-    if sort_by == 'name':
-        sort_by = 'product_name'
-    if sort_by == 'byprice':
-        sort_by = 'price'
-    if sort_by == 'pricedesc':
-        sort_by = '-price'
-    if sort_by:
-        product_list = Product.objects.all().order_by(sort_by)
-
-    input_range = request.GET.get('rangeInput')
-    if input_range:
-        print('a gaya yaha')
-        product_list = Product.objects.filter(price__lte=input_range)
-
-    #product_list = Product.objects.all().order_by(sort_by)
+    product_list = Product.objects.all()
     for product in product_list:
-        product.short_description = Truncator(product.product_description).chars(120)
+        product.short_description = Truncator(product.product_description).chars(125)
     return render(request, template_name='product/product_list.html', context={'product_list': product_list})
 
 
 @login_required
 @permission_required('product.add_cartitem', raise_exception=True)
 def add_to_cart(request, product_id):
-    print("hi")
     try:
         member = Member.objects.get(username=request.user.username)
     except Member.DoesNotExist:
@@ -133,19 +112,13 @@ def add_to_cart(request, product_id):
         quantity = int(request.POST.get('quantity', 1))
 
         cart_item, created = CartItem.objects.get_or_create(user=member, product=product)
-        if product.quantity - cart_item.quantity > 0:
-            cart_item.quantity  = quantity
-            cart_item.save()
-            success = True
-            message = 'Item has been added to cart'
+        if not created:
+            cart_item.quantity = quantity
         else:
-            cart_item.save()
-            success = False
-            message = f'Sorry, only {product.quantity} of this product are currently in stock.'
+            cart_item.quantity = quantity
+        cart_item.save()
 
-
-
-        return JsonResponse({'message': message })
+        return JsonResponse({'message': 'Item added to the cart.'})
     return JsonResponse({'message': 'Failed to add item to the cart.'}, status=400)
 
 
@@ -290,20 +263,12 @@ def cart_detail(request):
         total_price = 0
         print("Member not found for the user")
 
-
-    visited_products = request.COOKIES.get('visited_products', '')
-    visited_products_list = visited_products.split(',') if visited_products else []
-    visited_product_objects = Product.objects.filter(product_id__in=visited_products_list)
-
     return render(
         request,
         'product/cart_detail.html',
-        {
-            'cart_items': cart_items,
-            'total_price': total_price,
-            'visited_products': visited_product_objects
-        }
+        {'cart_items': cart_items, 'total_price': total_price}
     )
+
 
 def homepage(request):
     distinct_categories = Product.objects.values_list('category', flat=True).distinct()
@@ -317,35 +282,15 @@ def product_detail(request, pk):
         member = Member.objects.get(username=request.user.username)
     except Member.DoesNotExist:
         member = None
-
     product = get_object_or_404(Product, pk=pk)
     cart_item = CartItem.objects.filter(user=member, product=product).first()
     cart_quantity = cart_item.quantity if cart_item else 0
 
-
-    visited_products = request.COOKIES.get('visited_products', '')
-    visited_products_list = visited_products.split(',') if visited_products else []
-
-    if str(pk) not in visited_products_list:
-        # Ensure the list contains at most 5 items
-        if len(visited_products_list) >= 5:
-            visited_products_list.pop(0)
-
-
-        visited_products_list.append(str(pk))
-
-
-    new_visited_products = ','.join(visited_products_list)
-
-    response = render(
+    return render(
         request,
         template_name='product/product_detail.html',
         context={'product': product, 'cart_quantity': cart_quantity}
     )
-
-    response.set_cookie('visited_products', new_visited_products)
-
-    return response
 
 
 def aboutus(request):
@@ -357,38 +302,6 @@ def auction_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     auction = get_object_or_404(Auction, product=product)
     return render(request, 'product/auction.html', {'product': product, 'auction': auction})
-
-
-def dashboard(request, section):
-    if section == 'home':
-        details = Member.objects.get(username=request.user.username)
-        return render(request, 'product/dashboard.html', {'details': details})
-    elif section == 'edit':
-        details = Member.objects.get(username=request.user.username)
-        return render(request, 'product/editprofile.html', {'details': details})
-    elif section == 'edit_profile':
-        if request.method == 'POST':
-            user_profile = Member.objects.get(username=request.user)
-            form = EditProfileForm(request.POST, instance=user_profile)
-            if form.is_valid():
-                name = request.POST.get('first_name')
-                lastname = request.POST.get('last_name')
-                email = request.POST.get('email')
-                mobile = request.POST.get('mobile')
-                address = request.POST.get('address')
-                form.save()
-            return redirect('dashboard', section='home')
-        else:
-            details = Member.objects.get(username=request.user.username)
-            return render(request, 'product/editprofile.html', {'details': details})
-    elif section == 'orders':
-        return render(request, 'product/dashboard.html')
-    elif section == 'coins':
-         user = Member.objects.get(username=request.user.username)
-         coins_history = Transaction.objects.filter(user=user)
-         return render(request, 'product/coin_history.html',{'coins_history': coins_history})
-    else:
-        html = '<p>Content not found.</p>'
 
 
 @login_required
