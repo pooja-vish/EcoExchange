@@ -21,7 +21,7 @@ class Product(models.Model):
     product_name = models.CharField(max_length=255)
     product_description = models.TextField()
     image = models.ImageField(upload_to='img/')
-    quantity = models.IntegerField(validators=[MinValueValidator(0)])
+    quantity = models.IntegerField()
     price = models.IntegerField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     user = models.ForeignKey(Member, on_delete=models.CASCADE)

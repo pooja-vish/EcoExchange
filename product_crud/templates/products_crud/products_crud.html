@@ -2,87 +2,96 @@
 {% load static %}
 {% block body %}
     <div class="row">
-    <div class="col-lg-1 col-lg-3 bg-primary rounded div-space">
-        <h4>Don't let it sit around! Sell it here for something else!</h4>
-                        <form class="py-4" method="post" enctype="multipart/form-data" action="{% url 'product_details' %}">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <div class="px-8 py-8">
-                                <button class="btn btn-dark border-0 p-lg-10" type="submit">Submit
-                                </button>
+        <div class="col-lg-1 col-lg-3 bg-primary rounded div-space">
+            <h4>Don't let it sit around! Sell it here for something else!</h4>
+            <form class="py-4" method="post" enctype="multipart/form-data" action="{% url 'product_details' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="px-8 py-8">
+                    <button class="btn btn-dark border-0 p-lg-10" type="submit">Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-8 div-scroll">
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-6 col-lg-6 col-xl-4">
+                        <div class="rounded position-relative fruite-item div-left-space">
+                            <div class="fruite-img image-container">
+                                <img class="img-fluid w-100 rounded-top" src="{{ product.image.url }}" alt="{{ product.name }}"/>
                             </div>
+                            <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                <h4>{{ product.product_name }}</h4>
+                                <p>{{ product.short_description }}</p>
+                                <h5>Coins: {{ product.price }}</h5>
+                                <h5>Quantity: {{ product.quantity }}</h5>
+                                <br>
+                                <div class="d-flex justify-content-between flex-lg-wrap">
+                                    <button class="btn border border-secondary rounded-pill px-3 text-primary"
+                                onclick="editProduct('{{ product.product_id }}', '{{ product.product_name }}', '{{ product.product_description }}', '{{ product.quantity }}', '{{ product.price }}', '{{ product.image }}', '{{ product.category }}')">
+                            <i class="fa fa-edit me-2 text-primary"> Edit</i>
+                        </button>
+                                    <form action="{% url 'product_delete' product.product_id %}" method="POST">
+                            {% csrf_token %}
+                            <button class="div-center btn border border-secondary rounded-pill px-3 text-primary"> <i class="fa fa-trash me-2 text-primary"></i>Delete</button>
                         </form>
-    </div>
-    <div class="col-lg-5 col-lg-9 testimonial-item img-border-radius div-scroll rounded" style="border-left:500px">
-       {% for product in products %}
-           <div class="bg-light rounded p-4 div-left-space">
-        <h3 class="mb-4">{{  product.product_name }}</h3>
-            <p>{{ product.product_description }}</p>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-            <p class="text-dark fs-5 fw-bold mb-0"> Quantity: {{  product.quantity }}</p>
-            </div>
-            <div class="d-flex justify-content-between flex-lg-wrap">
-            <p class="text-dark fs-5 fw-bold mb-0">Coins: {{ product.price }}</p>
-            </div>
-           <br>
-            <img class="img-fluid rounded image-div"  src="{{ product.image.url }}" alt="{{ product.name }}" />
-           <br>
-           <br>
-           <div class="button-display">
-               <button class="btn btn-primary mt-3" onclick="editProduct('{{ product.product_id }}', '{{ product.product_name }}', '{{ product.product_description }}', '{{ product.quantity }}', '{{ product.price }}', '{{ product.image }}', '{{ product.category }}')">Edit</button>
-               <form action="{% url 'product_delete' product.product_id  %}" method="POST">
-               {% csrf_token %}
-               <button class="btn btn-primary mt-3">Delete</button>
-                </form>
-           </div>
-        </div>
-        {% endfor %}
-       </div>
+                                </div>
 
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
         <div class="modal fade" id="editProductModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
-                </div>
-                <div class="modal-body">
-                    <form id="editProductForm" enctype="multipart/form-data" method="POST" action="{% url 'product_update' %}">
-                        {% csrf_token %}
-                        <input type="hidden" id="productId" name="product_id" value="{{  product.product_id }}">
-                        <div class="form-group">
-                            <label for="productName">Product Name</label>
-                            <input type="text" class="form-control" id="productName" name="product_name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="productDescription">Product Description</label>
-                            <textarea class="form-control" id="productDescription" name="product_description" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="categoryName">Category</label>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editProductForm" method="POST" enctype="multipart/form-data" action="{% url 'product_update' %}">
+                            {% csrf_token %}
+                            <input type="hidden" id="productId" name="product_id" value="{{ product.product_id }}">
+                            <div class="form-group">
+                                <label for="productName">Product Name</label>
+                                <input type="text" class="form-control" id="productName" name="product_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productDescription">Product Description</label>
+                                <textarea class="form-control" id="productDescription" name="product_description"
+                                          required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="categoryName">Category</label>
 
-                            <select class="form-control" id="productCategory" name="category" required>
-                                {% for category in categories %}
-                                <option value="{{ category }}">{{ category }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productQuantity">Quantity</label>
-                            <input type="number" class="form-control" id="productQuantity" name="quantity" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="productPrice">Coins</label>
-                            <input type="text" class="form-control" id="productPrice" name="price" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="productImage">Image</label>
-                            <input type="file" class="form-control" id="productImage" name="image" accept="image/*" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </form>
+                                <select class="form-control" id="productCategory" name="category" required>
+                                    {% for category in categories %}
+                                        <option value="{{ category }}">{{ category }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="productQuantity">Quantity</label>
+                                <input type="number" class="form-control" id="productQuantity" name="quantity" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productPrice">Price</label>
+                                <input type="text" class="form-control" id="productPrice" name="price" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productImage">Image</label>
+                                <input type="file" class="form-control" id="productImage" name="image" accept="image/*"
+                                       required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-    {% endblock body %}
+{% endblock body %}

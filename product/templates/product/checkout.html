@@ -1,0 +1,62 @@
+{% extends 'product/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="bg-light rounded p-4">
+        <h1 class="display-6 mb-4">Checkout</h1>
+
+        {% if messages %}
+        <div>
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Products</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item, total in cart_items %}
+                    <tr>
+                        <td>
+                            <img src="{{ item.product.image.url }}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="{{ item.product.name }}">
+                        </td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.price }} $</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ total }} $</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <h5>Subtotal:</h5>
+            <p>{{ total_cost }} $</p>
+        </div>
+
+        <div class="d-flex justify-content-between mb-4">
+            <h5>Total:</h5>
+            <p>{{ total_cost }} $</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <button style="text-align: center" class="btn btn-primary" type="submit">Make Order</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
