@@ -1,0 +1,22 @@
+{% extends 'product/base.html' %}
+{% load static %}
+{% block body %}
+<div class="container-fluid" style="padding-top: 100px;"> <!-- Adjust padding-top based on navbar height -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="mb-4">Categories</h2>
+            <div class="d-flex flex-wrap">
+                {% for category in categories_list %}
+                <div class="card m-2" style="width: 200px;">
+                    <img src="{% static 'product/img/'%}{{ category }}.png" class="card-img-top" alt="{{ category }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ category }}</h5>
+                        <!-- You can add more details about each category if needed -->
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

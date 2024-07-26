@@ -13,9 +13,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -43,7 +43,10 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'product.apps.ProductConfig',
     'reviews',
-    'order.apps.OrderConfig'
+    'order.apps.OrderConfig',
+    'product_crud',
+    'channels',
+
 
 ]
 
@@ -76,7 +79,21 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'EcoExchange.asgi.application'
+
 WSGI_APPLICATION = 'EcoExchange.wsgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
+
+# WSGI_APPLICATION = 'EcoExchange.wsgi.application'
 
 
 # Database
@@ -136,6 +153,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STRIPE_SECRET_KEY = 'sk_test_51Pfb70L62CJC4fFrWjxMUHlpyAo5S25t0jQmwJP95NBckQvh80V7LGioYMW9JZ8yuP9gv6uUlkaywl4CNCTodYsv00kT5C5sGY'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51Pfb70L62CJC4fFriAP4ZbK2rWjIPdO4jVveMCNPbnp7w0991MqI6Asi3LMcmTQflqTDfZqOb1qJKaTYDCbHz22Q00Y1F3Js4P'
 
 MEDIA_URL = 'product/static/product/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '')

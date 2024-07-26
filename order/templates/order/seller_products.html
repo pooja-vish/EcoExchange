@@ -1,0 +1,51 @@
+{% extends 'product/base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">Ordered Products</h1>
+    <ul class="list-group">
+        {% for product in products %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Product ID:</strong> {{ product.id }}<br>
+                        <strong>Product Name:</strong> {{ product.name }}
+                    </div>
+                </div>
+                <ul class="list-group mt-3">
+                    {% for order_item in order_items1 %}
+                        {% if order_item.product_id == product %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Order ID:</strong> {{ order_item.order_id.id }}<br>
+                                        <strong>Ordered by User ID:</strong> {{ order_item.order_id.user_id.id }}<br>
+                                        <strong>User Name:</strong> {{ order_item.order_id.user_id.username }}
+                                    </div>
+                                    <div>
+                                             <form method="POST" action="{% url 'update_order_status' order_item.order_id.order_id %}">
+                                            {% csrf_token %}
+                                            <div class="input-group">
+                                                <select name="order_status" class="form-control">
+                                                    {% for code, name in order_item.order_id.ORDER_STATUS_CHOICES %}
+                                                        <option value="{{ code }}" {% if order_item.order_id.order_status == code %}selected{% endif %}>{{ name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button type="submit" class="btn btn-primary">Update Status</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

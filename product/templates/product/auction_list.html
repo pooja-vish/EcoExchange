@@ -1,0 +1,38 @@
+{% extends 'product/base.html' %}
+{% block body %}
+  <h1>Your Auctions</h1>
+  <a href="{% url 'auction_create' %}">Create new auction</a>
+  <ul>
+    {% for auction in auctions %}
+      <li>
+{#        <a href="{% url 'auction_detail' auction.pk %}">{{ auction.product.product_name }}</a>#}
+        <a href="{% url 'auction_update' auction.pk %}">Edit</a>
+          {{ auction.product.product_name }}
+        <button onclick="deleteAuction({{ auction.pk }})">Delete</button>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <script>
+    function deleteAuction(pk) {
+      if (confirm('Are you sure you want to delete this auction?')) {
+        fetch(`/auction/delete/${pk}/`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert('Error: Could not delete auction');
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      }
+    }
+  </script>
+{% endblock %}
