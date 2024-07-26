@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
@@ -17,15 +18,13 @@ from coins.models import Coins
 from order.models import Order, OrderItem
 from django.db import transaction
 
-class AuctionCreateView(View):
-    @login_required
-    @permission_required('product.add_auction', raise_exception=True)
+class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+
     def get(self, request):
         form = AuctionForm()
         return render(request, 'product/auction_form.html', {'form': form})
 
-    @login_required
-    @permission_required('product.add_auction', raise_exception=True)
+
     def post(self, request):
         form = AuctionForm(request.POST)
         if form.is_valid():
@@ -34,16 +33,13 @@ class AuctionCreateView(View):
         return JsonResponse({'success': False, 'errors': form.errors})
 
 
-class AuctionUpdateView(View):
-    @login_required
-    @permission_required('product.change_auction', raise_exception=True)
+class AuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
+
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction)
         return render(request, 'product/auction_form.html', {'form': form})
 
-    @login_required
-    @permission_required('product.change_auction', raise_exception=True)
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(request.POST, instance=auction)
@@ -53,20 +49,18 @@ class AuctionUpdateView(View):
         return JsonResponse({'success': False, 'errors': form.errors})
 
 
-class AuctionDeleteView(View):
-    @login_required
-    @permission_required('product.delete_auction', raise_exception=True)
+class AuctionDeleteView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
+
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         auction.delete()
         return JsonResponse({'success': True})
 
 
-class AuctionListView(ListView):
+class AuctionListView(LoginRequiredMixin, ListView):
     model = Auction
     template_name = 'product/auction_list.html'
 
-    @login_required
     def get_queryset(self):
         try:
             member = Member.objects.get(username=self.request.user.username)
