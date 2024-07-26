@@ -77,9 +77,25 @@ class AuctionRealTimeView(TemplateView):
 
 
 def products(request):
-    product_list = Product.objects.all()
+    products = []
+    sort_by = request.GET.get('sort', 'name')
+    if sort_by == 'name':
+        sort_by = 'product_name'
+    if sort_by == 'byprice':
+        sort_by = 'price'
+    if sort_by == 'pricedesc':
+        sort_by = '-price'
+    if sort_by:
+        product_list = Product.objects.all().order_by(sort_by)
+
+    input_range = request.GET.get('rangeInput')
+    if input_range:
+        print('a gaya yaha')
+        product_list = Product.objects.filter(price__lte=input_range)
+
+    #product_list = Product.objects.all().order_by(sort_by)
     for product in product_list:
-        product.short_description = Truncator(product.product_description).chars(125)
+        product.short_description = Truncator(product.product_description).chars(120)
     return render(request, template_name='product/product_list.html', context={'product_list': product_list})
 
 
