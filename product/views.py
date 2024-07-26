@@ -85,6 +85,7 @@ def products(request):
 
 @login_required
 def add_to_cart(request, product_id):
+    print("hi")
     try:
         member = Member.objects.get(username=request.user.username)
     except Member.DoesNotExist:
@@ -94,13 +95,19 @@ def add_to_cart(request, product_id):
         quantity = int(request.POST.get('quantity', 1))
 
         cart_item, created = CartItem.objects.get_or_create(user=member, product=product)
-        if not created:
-            cart_item.quantity = quantity
+        if product.quantity - cart_item.quantity > 0:
+            cart_item.quantity += 1
+            cart_item.save()
+            success = True
+            message = 'Item has been added to cart'
         else:
-            cart_item.quantity = quantity
-        cart_item.save()
+            cart_item.save()
+            success = False
+            message = f'Sorry, only {product.quantity} of this product are currently in stock.'
 
-        return JsonResponse({'message': 'Item added to the cart.'})
+
+
+        return JsonResponse({'message': message })
     return JsonResponse({'message': 'Failed to add item to the cart.'}, status=400)
 
 
@@ -239,12 +246,20 @@ def cart_detail(request):
         total_price = 0
         print("Member not found for the user")
 
+
+    visited_products = request.COOKIES.get('visited_products', '')
+    visited_products_list = visited_products.split(',') if visited_products else []
+    visited_product_objects = Product.objects.filter(product_id__in=visited_products_list)
+
     return render(
         request,
         'product/cart_detail.html',
-        {'cart_items': cart_items, 'total_price': total_price}
+        {
+            'cart_items': cart_items,
+            'total_price': total_price,
+            'visited_products': visited_product_objects
+        }
     )
-
 
 def homepage(request):
     distinct_categories = Product.objects.values_list('category', flat=True).distinct()
@@ -256,15 +271,35 @@ def product_detail(request, pk):
         member = Member.objects.get(username=request.user.username)
     except Member.DoesNotExist:
         member = None
+
     product = get_object_or_404(Product, pk=pk)
     cart_item = CartItem.objects.filter(user=member, product=product).first()
     cart_quantity = cart_item.quantity if cart_item else 0
 
-    return render(
+
+    visited_products = request.COOKIES.get('visited_products', '')
+    visited_products_list = visited_products.split(',') if visited_products else []
+
+    if str(pk) not in visited_products_list:
+        # Ensure the list contains at most 5 items
+        if len(visited_products_list) >= 5:
+            visited_products_list.pop(0)
+
+
+        visited_products_list.append(str(pk))
+
+
+    new_visited_products = ','.join(visited_products_list)
+
+    response = render(
         request,
         template_name='product/product_detail.html',
         context={'product': product, 'cart_quantity': cart_quantity}
     )
+
+    response.set_cookie('visited_products', new_visited_products)
+
+    return response
 
 
 def aboutus(request):
