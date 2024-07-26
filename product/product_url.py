@@ -24,6 +24,7 @@ urlpatterns = [
     path('auction/create/', AuctionCreateView.as_view(), name='auction_create'),
     path('auction/update/<int:pk>/', AuctionUpdateView.as_view(), name='auction_update'),
     path('auction/delete/<int:pk>/', AuctionDeleteView.as_view(), name='auction_delete'),
+    path('checkout/', views.checkout, name='checkout'),
     path('realtime/<int:product_id>/', views.AuctionRealTimeView.as_view(), name='auction_realtime'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

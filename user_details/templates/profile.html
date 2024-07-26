@@ -1,0 +1,47 @@
+{% extends 'product/base.html' %}
+{% load static %}
+
+{% block title %}Profile{% endblock title %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="{% url 'user_details:profile' %}" class="list-group-item list-group-item-action active">Profile</a>
+                <a href="{% url 'user_details:user_visit_history' %}" class="list-group-item list-group-item-action">View Visit History</a>
+                <a href="{% url 'user_details:password_change' %}" class="list-group-item list-group-item-action">Change Password</a>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Welcome, <span class="text-capitalize">{{ request.user.username }}</span></h3>
+                    <form action="" method="post"> <!-- Specify the action if needed, or leave blank to submit to the same URL -->
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-group mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                <!-- Manually add class attribute right here -->
+                                <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}" {% if field.value %}value="{{ field.value|stringformat:'s' }}" {% endif %}>
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <div class="alert alert-danger">{{ error }}</div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

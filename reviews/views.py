@@ -1,10 +1,12 @@
 # Example views.py
-
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Review
 from .forms import ReviewForm
 
 
+@login_required
+@permission_required('reviews.view_review', raise_exception=True)
 def product_detail_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     reviews = Review.objects.filter(product_id=product_id)
