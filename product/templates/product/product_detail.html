@@ -49,7 +49,7 @@
 
         $('#increase').click(function() {
             var quantity = parseInt($('#quantity').val());
-            if (quantity < maxQuantity && quantity > 0) {
+            if (quantity < maxQuantity ) {
                 $('#quantity').val(quantity + 1);
             } else {
                 alert('Sorry, only ' + maxQuantity + ' items are in stock.');
@@ -65,6 +65,11 @@
 
             $('#add-to-cart').click(function() {
                 var quantity = $('#quantity').val();
+                 if (quantity <= 0 ) {
+                    alert('Please choose more then 0 ');
+            } else {
+
+
                 $.ajax({
                     url: "{% url 'add_to_cart' product.product_id %}",
                     type: "POST",
@@ -81,6 +86,7 @@
                         $('#message').html('There was an error adding the item to the cart. <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
                     }
                 });
+                 }
             });
 
             $('#message').on('click', '.close', function() {
