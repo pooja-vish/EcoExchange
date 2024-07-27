@@ -2,16 +2,26 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, PasswordChangeForm, SetPasswordForm, PasswordResetForm
 from .models import Member
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 
+
+phone_validator = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',
+    message="Enter a valid phone number (e.g. +12125552368)."
+)
 
 class CustomerProfileForm(forms.ModelForm):
+    mobile_no = forms.CharField(
+        validators=[phone_validator],
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = Member
         fields = ['address', 'city', 'mobile_no', 'country']
         widgets = {
             'address': forms.TextInput(attrs={'class': 'form-control'}),
             'city': forms.TextInput(attrs={'class': 'form-control'}),
-            'mobile_no': forms.TextInput(attrs={'class': 'form-control'}),
             'country': forms.TextInput(attrs={'class': 'form-control'}),
         }
 

@@ -49,6 +49,9 @@
             // Show the modal
             $(`#editProductModal`).modal('show');
         }
+         function closeForm() {
+               $('#editProductModal').modal('hide');
+            }
         </script>
     </head>
 
@@ -96,6 +99,9 @@
                             <a href="{% url 'dashboard' section="home" %}" class="my-auto">
                                 <i class="fas fa-user fa-2x"></i>
                             </a>
+                            <a href="{% url 'user_details:logout' %}" class="my-auto div-space">
+    <i class="fas fa-power-off fa-2x"></i>
+</a>
                         </div>
                     </div>
                 </nav>
@@ -186,6 +192,8 @@
 
     <!-- Template Javascript -->
     <script src="{% static 'product/js/main.js' %}"></script>
+
+
     </body>
 
 </html>

@@ -38,8 +38,9 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='user_details/password_reset_complete.html'
     ), name='password_reset_complete'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='login_details'), name='logout'),
+    path('logout/', views.logout, name='logout'),
     path('user_visit_history/', views.user_visit_history_view, name='user_visit_history'),
+
 ]
 
 if settings.DEBUG:
