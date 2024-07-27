@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'order.apps.OrderConfig',
     'product_crud',
     'channels',
+    'feedback',
 
 
 ]
@@ -161,3 +162,5 @@ MEDIA_URL = 'product/static/product/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '')
 
 
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]

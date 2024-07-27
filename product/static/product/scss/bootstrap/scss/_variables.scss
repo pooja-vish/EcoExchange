@@ -867,7 +867,7 @@ $form-floating-transition:        opacity .1s ease-in-out, transform .1s ease-in
 
 // Form validation
 
-// scss-docs-start form-feedback-variables
+// scss-docs-start form-css-variables
 $form-feedback-margin-top:          $form-text-margin-top !default;
 $form-feedback-font-size:           $form-text-font-size !default;
 $form-feedback-font-style:          $form-text-font-style !default;
@@ -878,7 +878,7 @@ $form-feedback-icon-valid-color:    $form-feedback-valid-color !default;
 $form-feedback-icon-valid:          url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><path fill='#{$form-feedback-icon-valid-color}' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/></svg>") !default;
 $form-feedback-icon-invalid-color:  $form-feedback-invalid-color !default;
 $form-feedback-icon-invalid:        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='#{$form-feedback-icon-invalid-color}'><circle cx='6' cy='6' r='4.5'/><path stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/><circle cx='6' cy='8.2' r='.6' fill='#{$form-feedback-icon-invalid-color}' stroke='none'/></svg>") !default;
-// scss-docs-end form-feedback-variables
+// scss-docs-end form-css-variables
 
 // scss-docs-start form-validation-states
 $form-validation-states: (
@@ -1150,14 +1150,14 @@ $tooltip-arrow-color:               $tooltip-bg !default;
 // scss-docs-end tooltip-variables
 
 // Form tooltips must come after regular tooltips
-// scss-docs-start tooltip-feedback-variables
+// scss-docs-start tooltip-css-variables
 $form-feedback-tooltip-padding-y:     $tooltip-padding-y !default;
 $form-feedback-tooltip-padding-x:     $tooltip-padding-x !default;
 $form-feedback-tooltip-font-size:     $tooltip-font-size !default;
 $form-feedback-tooltip-line-height:   null !default;
 $form-feedback-tooltip-opacity:       $tooltip-opacity !default;
 $form-feedback-tooltip-border-radius: $tooltip-border-radius !default;
-// scss-docs-start tooltip-feedback-variables
+// scss-docs-start tooltip-css-variables
 
 
 // Popovers

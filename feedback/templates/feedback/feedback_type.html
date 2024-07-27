@@ -1,0 +1,15 @@
+{% extends 'product/base.html' %}
+{% load static %}
+<script src="{% static 'css/js/scripts.js' %}"></script>
+{% block body %}
+<div class="container py-5">
+    <div class="bg-light rounded p-4">
+        <h1 style="text-align: center" class="display-6 mb-4">Please Select Feedback Type</h1>
+        <div style="text-align: center">
+            <button class="btn btn-primary me-2" onclick="showFeedbackForm('question')">Question</button>
+            <button class="btn btn-primary me-2" onclick="showFeedbackForm('feedback')">Feedback</button>
+            <button class="btn btn-primary" onclick="showFeedbackForm('suggestion')">Suggestion</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

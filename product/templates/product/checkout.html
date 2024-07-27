@@ -34,9 +34,9 @@
                             <img src="{{ item.product.image.url }}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="{{ item.product.name }}">
                         </td>
                         <td>{{ item.product.name }}</td>
-                        <td>{{ item.product.price }} $</td>
+                        <td>{{ item.product.price }} coins</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ total }} $</td>
+                        <td>{{ total }} coins</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -45,18 +45,25 @@
 
         <div class="d-flex justify-content-between mt-4">
             <h5>Subtotal:</h5>
-            <p>{{ total_cost }} $</p>
+            <p>{{ total_cost }} coins</p>
         </div>
 
         <div class="d-flex justify-content-between mb-4">
             <h5>Total:</h5>
-            <p>{{ total_cost }} $</p>
+            <p>{{ total_cost}} coins</p>
         </div>
 
-        <form method="post">
+        <div class="d-flex justify-content-between mb-4">
+            <h5>Coin balance:</h5>
+            <p> {{ a }} coins</p>
+        </div>
+
+        <form style="text-align:center" method="post">
             {% csrf_token %}
+            <a href="{% url 'user_details:buy_coins' %}" class="btn btn-primary" style="text-align: center;">Buy More Coins</a>
             <button style="text-align: center" class="btn btn-primary" type="submit">Make Order</button>
         </form>
+
     </div>
 </div>
 {% endblock %}

@@ -279,7 +279,7 @@ def checkout(request):
     item_totals = [(item, item.product.price * item.quantity) for item in cart_items]
     total_cost = sum(total for item, total in item_totals)
     success_message = None
-
+    a=member.coin_balance
     if request.method == 'POST':
         if member.coin_balance >= total_cost:
             with transaction.atomic():
@@ -323,4 +323,5 @@ def checkout(request):
     return render(request, 'product/checkout.html', {
             'cart_items': item_totals,
             'total_cost': total_cost,
+            'a': a,
     })
