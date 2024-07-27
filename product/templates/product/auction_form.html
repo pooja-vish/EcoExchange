@@ -36,6 +36,9 @@
                                     <a href="{% url 'auction_realtime' auction.product.product_id %}" class="btn border border-secondary rounded-pill px-3 text-primary">
                                         <i class="fa fa-eye me-2 text-primary"></i> View Bids
                                     </a>
+                                    <a href="{% url 'auction_update' auction.product.product_id %}" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                        <i class="fa fa-eye me-2 text-primary"></i> Update
+                                    </a>
                                     <button class="btn btn-danger border border-secondary rounded-pill px-3 delete-button" data-id="{{ auction.pk }}">
                                         <i class="fa fa-trash me-2 text-danger"></i> Delete
                                     </button>

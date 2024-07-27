@@ -18,6 +18,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from product.models import Product
 from .models import Member
+from django.contrib.auth import logout as auth_logout
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -43,6 +44,10 @@ def login_view(request):
 
     return render(request, 'user_details/login.html', {'form': form, 'error_message': error_message})
 
+
+def logout(request):
+    auth_logout(request)
+    return redirect('homepage')
 
 @receiver(post_save, sender=Member)
 def assign_default_permissions(sender, instance, created, **kwargs):
