@@ -120,13 +120,24 @@ def products(request):
 
     input_range = request.GET.get('rangeInput')
     if input_range:
-        print('a gaya yaha')
         product_list = Product.objects.filter(price__lte=input_range)
 
-    #product_list = Product.objects.all().order_by(sort_by)
+    search = request.GET.get('find')
+    if search:
+        product_list = Product.objects.filter(product_description__icontains=search)
+
+    if request.method == 'POST':
+        selected_categories = request.POST.getlist('categories')
+        print(selected_categories)
+        if selected_categories:
+            product_list = Product.objects.filter(category__in=selected_categories)
+
+    total_products = Product.objects.all().values('category').distinct()
+    print(total_products)
     for product in product_list:
         product.short_description = Truncator(product.product_description).chars(120)
-    return render(request, template_name='product/product_list.html', context={'product_list': product_list})
+    return render(request, template_name='product/product_list.html',
+                  context={'product_list': product_list, 'total_products': total_products})
 
 
 @login_required
