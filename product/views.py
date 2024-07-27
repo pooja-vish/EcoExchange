@@ -74,7 +74,6 @@ class AuctionListView(ListView):
     model = Auction
     template_name = 'product/auction_list.html'
 
-
     def get_queryset(self):
         try:
             member = Member.objects.get(username=self.request.user.username)

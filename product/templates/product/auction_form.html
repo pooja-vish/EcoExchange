@@ -14,7 +14,6 @@
                         </button>
                     </div>
                 </form>
-                <a href="{% url 'auction_list' %}" id="cancel-button" class="btn btn-danger mt-2">Cancel</a>
             </div>
         </div>
         <div class="col-lg-8">
@@ -36,7 +35,7 @@
                                     <a href="{% url 'auction_realtime' auction.product.product_id %}" class="btn border border-secondary rounded-pill px-3 text-primary">
                                         <i class="fa fa-eye me-2 text-primary"></i> View Bids
                                     </a>
-                                    <a href="{% url 'auction_update' auction.product.product_id %}" class="btn border border-secondary rounded-pill px-3 text-primary">
+                                    <a href="{% url 'auction_update' auction.id %}" class="btn border border-secondary rounded-pill px-3 text-primary">
                                         <i class="fa fa-eye me-2 text-primary"></i> Update
                                     </a>
                                     <button class="btn btn-danger border border-secondary rounded-pill px-3 delete-button" data-id="{{ auction.pk }}">
@@ -53,69 +52,79 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    // Initialize flatpickr for the existing start and end time fields
-    flatpickr("#id_start_time", {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i",
-    });
-    flatpickr("#id_end_time", {
-        enableTime: true,
-        dateFormat: "Y-m-d H:i",
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize flatpickr for the existing start and end time fields
+        flatpickr("#id_start_time", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+        });
+        flatpickr("#id_end_time", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+        });
 
-    // Form submission handling
-    document.getElementById('auction-form').onsubmit = function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const actionUrl = this.action;
+        // Form submission handling
+        const auctionForm = document.getElementById('auction-form');
+        if (auctionForm) {
+            auctionForm.onsubmit = function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const actionUrl = this.action;
 
-        fetch(actionUrl, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+                fetch(actionUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '{% url "auction_list" %}';
+                    } else {
+                        alert('Error: ' + JSON.stringify(data.errors));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            };
+        }
+
+        const cancelButton = document.getElementById('cancel-button');
+        if (cancelButton) {
+            cancelButton.onclick = function(e) {
                 window.location.href = '{% url "auction_list" %}';
-            } else {
-                alert('Error: ' + JSON.stringify(data.errors));
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    };
+            };
+        }
 
-    document.getElementById('cancel-button').onclick = function(e) {
-        window.location.href = '{% url "auction_list" %}';
-    };
+        // Delete button handling
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.onclick = function() {
+                const auctionId = this.getAttribute('data-id');
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    // Delete button handling
-    document.querySelectorAll('.delete-button').forEach(button => {
-        button.onclick = function() {
-            const auctionId = this.getAttribute('data-id');
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            fetch(`/delete-auction/${auctionId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + JSON.stringify(data.errors));
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        };
+                fetch(`/auction/delete/${auctionId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + JSON.stringify(data.errors));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            };
+        });
     });
 </script>
+
 {% endblock %}
