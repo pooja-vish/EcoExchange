@@ -366,7 +366,7 @@ def aboutus(request):
 def auction_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     auction = get_object_or_404(Auction, product=product)
-    return render(request, 'product/auction.html', {'product': product, 'auction': auction})
+    return render(request, 'product/auction_view.html', {'product': product, 'auction': auction})
 
 
 @login_required
