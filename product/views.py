@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
@@ -15,7 +16,7 @@ from order.models import Order, OrderItem
 from django.db import transaction
 
 
-class AuctionCreateView(View):
+class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request):
         form = AuctionForm(user=request.user)  # Pass the user to the form
         auctions = Auction.objects.filter(product__user=request.user)  # Filter auctions based on the logged-in user
@@ -30,7 +31,7 @@ class AuctionCreateView(View):
         return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
-class AuctionUpdateView(View):
+class AuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction, user=request.user)  # Pass the user to the form
@@ -47,7 +48,7 @@ class AuctionUpdateView(View):
         return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
-class AuctionDeleteView(View):
+class AuctionDeleteView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
@@ -55,7 +56,7 @@ class AuctionDeleteView(View):
         return JsonResponse({'success': True})
 
 
-class AuctionAllListView(ListView):
+class AuctionAllListView(LoginRequiredMixin, ListView):
     model = Auction
     template_name = 'product/all_auctions.html'
     context_object_name = 'all_auctions'
