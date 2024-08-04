@@ -79,6 +79,19 @@
     width: 56px;
     height: 56px;
 }
+.margin-form-left {
+    margin-left: 650px;
+    margin-top: 50px;
+}
+.elements-left-h4 {
+    margin-left: 120px
+}
+.elements-left-button {
+    margin-left: 240px
+}
+.padding-all {
+    padding: 30px;
+}
 
 .btn-square,
 .btn-sm-square,

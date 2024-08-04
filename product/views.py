@@ -1,13 +1,15 @@
+import random
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.text import Truncator
 from user_details.models import Member, Transaction
-from product.models import Product, CartItem, Auction
+from product.models import Product, CartItem, Auction, Queries
 
-from .forms import AuctionForm, EditProfileForm
+from .forms import AuctionForm, EditProfileForm, QueryForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, TemplateView
+
 
 from django.views import View
 from django.contrib import messages
@@ -378,7 +380,23 @@ def auction_view(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     auction = get_object_or_404(Auction, product=product)
     return render(request, 'product/auction_view.html', {'product': product, 'auction': auction})
-
+@login_required
+def support(request):
+    if request.method == 'POST':
+        form = QueryForm(request.POST)
+        if form.is_valid():
+            choices = form.cleaned_data['choices']
+            description = form.cleaned_data['description']
+            member = Member.objects.get(username=request.user)
+            ticket_id = random.randint(1000000000, 9999999999)
+            while(Queries.objects.filter(ticket_id=ticket_id).exists()):
+                ticket_id = random.randint(1000000000, 9999999999)
+            query_object = Queries(choices=choices, description=description, user=member, ticket_id=ticket_id)
+            query_object.save()
+        return redirect('homepage')
+    else:
+        form = QueryForm()
+    return render(request, 'product/support.html', {'form': form})
 
 @login_required
 def dashboard(request, section):

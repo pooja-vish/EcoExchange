@@ -1,9 +1,5 @@
 from django import forms
-from .models import Auction, Member, Product
-
-from django import forms
-from .models import Auction, Member
-
+from .models import Auction, Member, Product, Queries
 
 class AuctionForm(forms.ModelForm):
     class Meta:
@@ -21,6 +17,15 @@ class AuctionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if user is not None:
             self.fields['product'].queryset = Product.objects.filter(user=user)
+
+class QueryForm(forms.ModelForm):
+    class Meta:
+        model = Queries
+        fields = ['choices', 'description']
+        widgets = {
+            'choices': forms.Select(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }
 
 
 class EditProfileForm(forms.ModelForm):
