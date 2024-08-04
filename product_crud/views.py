@@ -20,7 +20,7 @@ def product_details(request):
             price = form.cleaned_data['price']
             category = form.cleaned_data['category']
             image = form.cleaned_data['image']
-            new_product = Product(
+            new_product =  Product(
                 product_name=name,
                 product_description=description,
                 quantity=quantity,

@@ -29,7 +29,18 @@ class Product(models.Model):
     def __str__(self):
         return self.product_name
 
-
+class Queries(models.Model):
+    SUPPORT_CHOICES = [
+        ('Account_Management', 'Account Management'),
+        ('Technical_issues', 'Technical issues'),
+        ('Billing_payments', 'Billing & Payments'),
+        ('Product_service', 'Product Service Information'),
+        ('Other', 'Other')
+    ]
+    choices = models.CharField(max_length=50, choices=SUPPORT_CHOICES)
+    description = models.TextField()
+    user = models.ForeignKey(Member, on_delete=models.CASCADE)
+    ticket_id = models.IntegerField(primary_key=True, null=False, blank=False)
 class Auction(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
     current_bid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
