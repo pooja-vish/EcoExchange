@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'order.apps.OrderConfig',
     'product_crud',
     'channels',
+    'feedback',
 
 
 ]
