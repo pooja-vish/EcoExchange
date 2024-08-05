@@ -87,7 +87,7 @@
     margin-top: 50px;
 }
 .elements-left-h4 {
-    margin-left: 15%
+    margin-left: 10%
 }
 .elements-left-button {
     margin-left: 40%
@@ -95,7 +95,13 @@
 .padding-all {
     padding: 30px;
 }
-
+.img-pad {
+    padding: 2%
+}
+.image-width {
+    width: 70% !important;
+    align-content: center;
+}
 .btn-square,
 .btn-sm-square,
 .btn-md-square,
@@ -141,7 +147,7 @@
 .div-scroll {
     overflow-y: scroll;
     width: 73%;
-    height: 670px;
+    height: 690px;
 }
 .div-center {
     display: flex;
