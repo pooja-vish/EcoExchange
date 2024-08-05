@@ -389,11 +389,13 @@ def support(request):
             description = form.cleaned_data['description']
             member = Member.objects.get(username=request.user)
             ticket_id = random.randint(1000000000, 9999999999)
+            status = 'Active'
             while(Queries.objects.filter(ticket_id=ticket_id).exists()):
                 ticket_id = random.randint(1000000000, 9999999999)
-            query_object = Queries(choices=choices, description=description, user=member, ticket_id=ticket_id)
+            query_object = Queries(choices=choices, description=description, user=member, ticket_id=ticket_id, status=status)
             query_object.save()
-        return redirect('homepage')
+            form = QueryForm()
+        return render(request, 'product/support.html', {'form': form, 'ticket_id': ticket_id})
     else:
         form = QueryForm()
     return render(request, 'product/support.html', {'form': form})
