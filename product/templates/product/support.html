@@ -1,0 +1,18 @@
+{% extends 'product/base.html' %}
+{% load static %}
+{% block body %}
+
+
+<div class="col-lg-4 bg-primary rounded margin-form-left padding-all">
+            <h4 class="elements-left-h4">Have any Query, Raise it here!</h4>
+            <form class="py-4" method="post" enctype="multipart/form-data" action="{% url 'support' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="px-8 py-8">
+                    <button class="btn btn-dark border-0 p-lg-10 elements-left-button" type="submit">Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+
+{% endblock %}

@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from product.models import Product
@@ -5,6 +6,8 @@ from product_crud.forms import ProductForm
 from user_details.models import Member
 from django.utils.text import Truncator
 
+@login_required
+@permission_required('product.add_product', raise_exception=True)
 def product_details(request):
     form = ProductForm()
     if request.method == 'POST':
@@ -17,7 +20,7 @@ def product_details(request):
             price = form.cleaned_data['price']
             category = form.cleaned_data['category']
             image = form.cleaned_data['image']
-            new_product = Product(
+            new_product =  Product(
                 product_name=name,
                 product_description=description,
                 quantity=quantity,
@@ -40,6 +43,8 @@ def product_details(request):
     return render(request, 'products_crud/products_crud.html', {'form': form, 'products': products, 'categories': categories})
 
 
+@login_required
+@permission_required('product.delete_product', raise_exception=True)
 def product_delete(request, product_id):
     if request.method == 'POST':
         product = Product.objects.get(pk=product_id)
@@ -48,6 +53,8 @@ def product_delete(request, product_id):
     return redirect('product_details')
 
 
+@login_required
+@permission_required('product.change_product', raise_exception=True)
 def product_update(request):
     if request.method == 'POST':
         id = request.POST.get('product_id')

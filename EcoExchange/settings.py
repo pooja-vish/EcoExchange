@@ -26,10 +26,30 @@ SECRET_KEY = 'django-insecure-rh&1g(b9-jgiu)74$=bsjqp$&-*i1499su%v980fzyc7^*zx^r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+
 ALLOWED_HOSTS = []
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rutvikonline@gmail.com'
+EMAIL_HOST_PASSWORD = 'htin sxla xmfn gmaw'
 
-# Application definition
+PASSWORD_RESET_TIMEOUT_DAYS = 1
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -58,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'user_details.middleware.TrackUserVisitsMiddleware',
 ]
 
 ROOT_URLCONF = 'EcoExchange.urls'
@@ -131,6 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_URL = '/userdetails/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

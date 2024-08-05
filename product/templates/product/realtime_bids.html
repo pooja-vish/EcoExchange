@@ -6,7 +6,7 @@
     <h1>Live Auction Bids for {{ product.product_name }}</h1>
     <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="img-fluid mb-3">
     <p><strong>Description:</strong> {{ product.product_description }}</p>
-    <p><strong>Current Bid:</strong> $<span id="current-bid">{{ auction.current_bid }}</span></p>
+    <p><strong>Current Bid:</strong> $<span id="current-bid">{{ auction.current_bid }} Coins</span></p>
     <p><strong>Current Winner:</strong>
         <span id="current-winner">
             {% if auction.current_winner %}
