@@ -1,7 +1,7 @@
 from django.db import models
 from user_details.models import Member
 from django.core.validators import MinValueValidator
-
+from django.utils import timezone
 class Product(models.Model):
     CATEGORY_CHOICES = [
         ('PAPER', 'Paper'),
@@ -44,6 +44,7 @@ class Queries(models.Model):
     choices = models.CharField(max_length=50, choices=SUPPORT_CHOICES)
     description = models.TextField()
     user = models.ForeignKey(Member, on_delete=models.CASCADE)
+    request_date = models.DateTimeField(default=timezone.now)
     ticket_id = models.IntegerField(primary_key=True, null=False, blank=False)
     status = models.CharField(max_length=50, choices=status_choices, default='Active')
 class Auction(models.Model):
