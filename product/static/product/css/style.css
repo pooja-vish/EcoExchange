@@ -83,14 +83,14 @@
     margin-left: 620px;
 }
 .margin-form-left {
-    margin-left: 650px;
+    margin-left: 35%;
     margin-top: 50px;
 }
 .elements-left-h4 {
-    margin-left: 120px
+    margin-left: 15%
 }
 .elements-left-button {
-    margin-left: 240px
+    margin-left: 40%
 }
 .padding-all {
     padding: 30px;
@@ -108,6 +108,7 @@
 }
 .div-left-space {
     margin-left: 40px;
+    margin-top: 30px
 }
 .div-padding-right {
     padding-bottom: 20px;
@@ -644,7 +645,9 @@
     flex-wrap: wrap;
     margin-bottom: 15px;
 }
-
+.form-margin-left {
+    margin-left: 160px;
+}
 /* Label styles */
 .form-group label {
     flex: 0 0 150px; /* Adjust the width as needed */

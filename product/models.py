@@ -21,8 +21,8 @@ class Product(models.Model):
     product_name = models.CharField(max_length=255)
     product_description = models.TextField()
     image = models.ImageField(upload_to='img/')
-    quantity = models.IntegerField(validators=[MinValueValidator(0)])
-    price = models.IntegerField()
+    quantity = models.IntegerField(validators=[MinValueValidator(1)])
+    price = models.IntegerField(validators=[MinValueValidator(1)])
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     user = models.ForeignKey(Member, on_delete=models.CASCADE)
 
@@ -37,10 +37,15 @@ class Queries(models.Model):
         ('Product_service', 'Product Service Information'),
         ('Other', 'Other')
     ]
+    status_choices = [
+        ('Active', 'Active'),
+        ('Resolved', 'Resolved'),
+    ]
     choices = models.CharField(max_length=50, choices=SUPPORT_CHOICES)
     description = models.TextField()
     user = models.ForeignKey(Member, on_delete=models.CASCADE)
     ticket_id = models.IntegerField(primary_key=True, null=False, blank=False)
+    status = models.CharField(max_length=50, choices=status_choices, default='Active')
 class Auction(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
     current_bid = models.DecimalField(max_digits=10, decimal_places=2, default=0)

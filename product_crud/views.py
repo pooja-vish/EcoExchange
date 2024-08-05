@@ -33,7 +33,8 @@ def product_details(request):
             messages.success(request, 'Product added successfully!')
             form = ProductForm()
         else:
-            messages.error(request, 'Error adding product.')
+            messages.error(request, 'Please correct the above error.')
+
     else:
         form = ProductForm()
     products = Product.objects.filter(user=request.user)

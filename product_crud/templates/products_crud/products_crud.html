@@ -11,6 +11,16 @@
                     <button class="btn btn-dark border-0 p-lg-10" type="submit">Submit
                     </button>
                 </div>
+                {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} my-3">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                 {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <p class="alert alert-danger my-3">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
             </form>
         </div>
         <div class="col-lg-8 div-scroll">
@@ -77,11 +87,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="productQuantity">Quantity</label>
-                                <input type="number" class="form-control" id="productQuantity" name="quantity" required>
+                                <input type="number" class="form-control form-margin-left" id="productQuantity" name="quantity" required>
                             </div>
                             <div class="form-group">
-                                <label for="productPrice">Price</label>
-                                <input type="text" class="form-control" id="productPrice" name="price" required>
+                                <label for="productPrice">Coins</label>
+                                <input type="number" class="form-control form-margin-left" id="productPrice" name="price" required>
                             </div>
                             <div class="form-group">
                                 <label for="productImage">Image</label>
@@ -89,7 +99,7 @@
                                        required>
                             </div>
                             <button type="submit" class="btn btn-primary">Save changes</button>
-                        </form>
+                            </form>
                     </div>
                 </div>
             </div>
