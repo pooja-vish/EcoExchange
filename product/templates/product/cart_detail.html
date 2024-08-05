@@ -69,11 +69,14 @@
                         <h5 class="mb-0 ps-4 me-4">Total</h5>
                         <p class="mb-0" id="total">{{ total_price }} Coins</p>
                     </div>
-                    <a href="{% url 'checkout' %}">
-                        <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" id="checkout-button" type="button">
+                   <a href="{% url 'checkout' %}">
+    <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4"
+            id="checkout-button"
+            type="button"
+            {% if total_price == 0 %}disabled{% endif %}>
         Proceed Checkout
     </button>
-                    </a>
+</a>
                 </div>
             </div>
         </div>
@@ -103,7 +106,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Function to update the checkout button state
+    const csrfToken = '{{ csrf_token }}';
+
     function updateCheckoutButton() {
         const totalElement = document.getElementById('total');
         let totalPrice = 0;
@@ -111,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             // Parse the total price from the text content
             totalPrice = parseFloat(totalElement.innerText.replace(' Coins', ''));
+            console.log(totalPrice)
             if (isNaN(totalPrice)) {
                 throw new Error('Invalid total price');
             }
@@ -121,11 +126,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const checkoutButton = document.getElementById('checkout-button');
         if (totalPrice === 0) {
             checkoutButton.disabled = true;
+            console.log("yes")
         } else {
             checkoutButton.disabled = false;
         }
     }
 
+    // Initial update when the page loads
+    updateCheckoutButton();
 
     document.querySelectorAll('button[data-action="increment"], button[data-action="decrement"], button[data-action="delete"]').forEach(button => {
         button.addEventListener('click', function (event) {
@@ -162,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.getElementById(`total-${itemId}`).innerText = `${data.total} Coins`;
                     }
                     document.getElementById('total').innerText = `${data.total_price} Coins`;
-                    updateCheckoutButton(data.total_price);
                 } else {
                     alert(data.message);
                 }

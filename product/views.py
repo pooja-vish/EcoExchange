@@ -498,7 +498,7 @@ def checkout(request):
             else:
                 messages.error(request, 'Insufficient coins to complete the purchase.')
         else:
-            messages.error(request, 'Empty cart Cannot complete Order')
+            messages.error(request, 'Empty cart, please add items to cart for placing order.')
     return render(request, 'product/checkout.html', {
             'cart_items': item_totals,
             'total_cost': total_cost,

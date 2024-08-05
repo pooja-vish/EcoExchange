@@ -16,7 +16,7 @@
                     <p><strong>Quantity:</strong> {{ product.quantity }}</p>
                     <p><strong>Price:</strong> ${{ product.price }}</p>
                     <p><strong>Category:</strong> {{ product.get_category_display }}</p>
-                    <p><strong>Posted by:</strong> <a href="{% url 'user_details:seller_desc' product.user.id %}">{{ product.user.username }}</a></p>
+                    <p><strong>Posted by:</strong> <a href="{% url 'user_details:seller_desc' product.user.id %}" type="_blank">{{ product.user.username }}</a></p>
                     <div class="form-group">
                         <label for="quantity">Quantity:</label>
                         <div class="input-group">
