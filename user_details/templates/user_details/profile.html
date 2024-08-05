@@ -9,10 +9,18 @@
         <!-- Sidebar Navigation -->
         <div class="col-md-3">
             <div class="list-group">
-                <a href="{% url 'user_details:profile' %}" class="list-group-item list-group-item-action active">Profile</a>
-                <a href="{% url 'user_details:user_visit_history' %}" class="list-group-item list-group-item-action">View Visit History</a>
+                <a href="{% url 'dashboard' section='home' %}" class="list-group-item list-group-item-action active">Dashboard</a>
+                <a href="{% url 'user_details:profile' %}" class="list-group-item list-group-item-action ">Edit Profile</a>
+                <a href="{% url 'user_orders' %}" class="list-group-item list-group-item-action ">Your Orders</a>
+                <a href="{% url 'ordered_products' %}" class="list-group-item list-group-item-action ">Your Products</a>
+                <a href="{% url 'dashboard' section='coins' %}" class="list-group-item list-group-item-action ">Coin History</a>
+                <a href="{% url 'dashboard' section='query' %}" class="list-group-item list-group-item-action ">Your Raised Queries</a>
+                {% if user.is_superuser %}
+                        <a href="{% url 'user_details:user_visit_history' %}"
+                           class="list-group-item list-group-item-action">View Visit History</a>
+                {% endif %}
                 <a href="{% url 'user_details:password_change' %}" class="list-group-item list-group-item-action">Change Password</a>
-
+                <a href="{% url 'user_details:logout' %}" class="list-group-item list-group-item-action">Logout</a>
             </div>
         </div>
 
@@ -36,8 +44,14 @@
                                         <div class="alert alert-danger">{{ error }}</div>
                                     {% endfor %}
                                 {% endif %}
+
                             </div>
                         {% endfor %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} my-3">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
                         <button type="submit" class="btn btn-primary">Update Profile</button>
                     </form>
                 </div>

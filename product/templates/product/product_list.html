@@ -9,18 +9,21 @@
                 <div class="col-lg-12">
                     <div class="row g-4">
                         <div class="col-xl-3">
-{#                            <div class="input-group w-100 mx-auto d-flex">#}
-{#                                <input type="search" class="form-control p-3" placeholder="keywords"#}
-{#                                       aria-describedby="search-icon-1">#}
-{#                                <span id="search-icon-1" class="input-group-text p-3"><i#}
-{#                                        class="fa fa-search"></i></span>#}
-{#                            </div>#}
+                            {#                            <div class="input-group w-100 mx-auto d-flex">#}
+                            {#                                <input type="search" class="form-control p-3" placeholder="keywords"#}
+                            {#                                       aria-describedby="search-icon-1">#}
+                            {#                                <span id="search-icon-1" class="input-group-text p-3"><i#}
+                            {#                                        class="fa fa-search"></i></span>#}
+                            {#                            </div>#}
                             <form method="get" action="{% url 'products' %}">
                                 <div class="input-group w-100 mx-auto d-flex">
-                                    <input type="search" name ="find" class="form-control p-3" style="padding: 1.5rem !important; " placeholder="keywords" aria-describedby="search-icon-1">
-{#                                    <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>#}
-                                    <button type="submit" class="input-group-text p-3"><i class="fa fa-search"></i></button>
-                            </div>
+                                    <input type="search" name="find" class="form-control p-3"
+                                           style="padding: 1.5rem !important; " placeholder="keywords"
+                                           aria-describedby="search-icon-1">
+                                    {#                                    <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>#}
+                                    <button type="submit" class="input-group-text p-3"><i class="fa fa-search"></i>
+                                    </button>
+                                </div>
                             </form>
                         </div>
                         <div class="col-6"></div>
@@ -49,24 +52,27 @@
                                 <form method="post" action="{% url 'products' %}">
                                     {% csrf_token %}
                                     <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <h4>Categories</h4>
-                                        <ul class="list-unstyled fruite-categorie">
-                                            {% for product in total_products %}
-                                                <li>
-                                                <div class="d-flex justify-content-between fruite-name" style="color: #81c408">
-                                                    <input type="checkbox" name="categories" value="{{ product.category }}">{{  product.category }}
-                                                </div>
-                                            </li>
-                                            {% endfor %}
-                                       </ul>
-                                        <div class="row-lg-100">
-                                            <button class="btn btn-lg btn-primary px-3 d-none d-lg-block" type="submit">
-                                                Filter
-                                            </button>
+                                        <div class="mb-3">
+                                            <h4>Categories</h4>
+                                            <ul class="list-unstyled fruite-categorie">
+                                                {% for product in total_products %}
+                                                    <li>
+                                                        <div class="d-flex justify-content-between fruite-name"
+                                                             style="color: #81c408">
+                                                            <input type="checkbox" name="categories"
+                                                                   value="{{ product.category }}">{{ product.category }}
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                            <div class="row-lg-100">
+                                                <button class="btn btn-lg btn-primary px-3 d-none d-lg-block"
+                                                        type="submit">
+                                                    Filter
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                                 </form>
                                 <div class="col-lg-12">
                                     <form method="get">
@@ -100,7 +106,8 @@
                                             <div class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                  style="top: 10px; left: 10px;">{{ product.category }}</div>
                                             <div class="p-4">
-                                               <a href="{% url 'product_detail' product.product_id %}"> <h4>{{ product.product_name }}</h4></a>
+                                                <a href="{% url 'product_detail' product.product_id %}">
+                                                    <h4>{{ product.product_name }}</h4></a>
                                                 <p>{{ product.short_description }}</p>
                                                 <p>Quantity : {{ product.quantity }}</p>
                                                 <p class="text-dark fs-5 fw-bold mb-0">Coins
@@ -114,6 +121,7 @@
                                         </div>
                                     </div>
                                 {% endfor %}
+
                             </div>
                         </div>
                     </div>
@@ -122,4 +130,5 @@
         </div>
     </div>
     <!-- Product List End-->
+
 {% endblock body %}

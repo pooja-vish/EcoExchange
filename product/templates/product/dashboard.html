@@ -1,113 +1,58 @@
 {% extends 'product/base.html' %}
 {% load static %}
+
+{% block title %}Profile{% endblock title %}
+
 {% block body %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            initializeSidebarMenu();
-        });
-
-        function initializeSidebarMenu() {
-            const links = document.querySelectorAll('.sidebar-menu a');
-            links.forEach(link => {
-                link.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    const targetSection = this.getAttribute('data-target');
-                    if (targetSection === 'orders') {
-                        window.location.href = '/order/';
-                    }
-                    if(targetSection === 'onsale'){
-                        window.location.href = '/onsale/';
-                    }
-                    else {
-                        fetchContent(targetSection);
-                    }
-                });
-            });
-        }
-
-        function fetchContent(section) {
-            fetch(`/dashboard/${section}/`)
-                .then(response => response.text())
-                .then(html => {
-                    document.querySelector('.content-section').innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('Error loading content:', error);
-                });
-        }
-    </script>
-
-    <div style="display: flex">
-        <div class="sidebar" style="width: 25%;">
-            <div class="sidebar-header">
-                <h3>Hello {{ details.first_name  }} {{  details.last_name }}</h3>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="{% url 'dashboard' section='home' %}" class="list-group-item list-group-item-action active">Dashboard</a>
+                <a href="{% url 'user_details:profile' %}" class="list-group-item list-group-item-action ">Edit Profile</a>
+                <a href="{% url 'user_orders' %}" class="list-group-item list-group-item-action ">Your Orders</a>
+                <a href="{% url 'ordered_products' %}" class="list-group-item list-group-item-action ">Your Products</a>
+                <a href="{% url 'user_details:profile' %}" class="list-group-item list-group-item-action ">Coin History</a>
+                <a href="{% url 'dashboard' section='query' %}" class="list-group-item list-group-item-action ">Your Raised Queries</a>
+                <a href="{% url 'user_details:user_visit_history' %}" class="list-group-item list-group-item-action">View Visit History</a>
+                <a href="{% url 'user_details:password_change' %}" class="list-group-item list-group-item-action">pChange Password</a>
             </div>
-            <ul class="sidebar-menu" style="list-style-type: none">
-                <li><a href="#home" data-target="home" >Dashboard</a></li>
-                <li><a href="#edit" data-target="edit">Edit Profile</a></li>
-                <li><a href="#orders" data-target="orders">Your Orders</a></li>
-                <li><a href="#onsale" data-target="onsale">Your Products</a></li>
-                <li><a href="#coins" data-target="coins">Coin History</a></li>
-
-            </ul>
         </div>
-        <div class="content" style="display: block; width: 70%">
-            <div id="home" class="content-section active">
-                <h1>Welcome to your profile</h1>
-                <table style="width: 80%; border-collapse: collapse; margin: 20px 0;">
-                    <tr>
-                        <th style="width:40%; padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                            First Name
-                        </th>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.first_name }}</td>
-                    </tr>
-                    <tr>
-                        <th style=" width:40%; padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                            Last Name
-                        </th>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.last_name }}</td>
-                    </tr>
-                    <tr>
-                        <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                            Email
-                        </th>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.email }}</td>
-                    </tr>
-                    <tr>
-                        <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4; width: 50%;">
-                            Mobile Number
-                        </th>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.mobile_no }}</td>
-                    </tr>
-                    <tr>
-                        <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                            Address
-                        </th>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.address }}</td>
-                    </tr>
-                    <tr>
-                        <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                            Available Coins
-                        </th>
-                        <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.coin_balance }}</td>
-                    </tr>
-                </table>
-            </div>
-            <div id="edit" class="content-section">
 
-            </div>
-            <div id="orders" class="content-section">
-                <h1>Orders</h1>
-                <p>This is the orders content.</p>
-            </div>
-            <div id="coins" class="content-section">
-                <h1>Coin History</h1>
-                <p>This is the coins content.</p>
-            </div>
-            <div id="onsale" class="content-section">
-                <h1>Your Products</h1>
-                <p>This is your product content.</p>
+        <!-- Profile Form -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Welcome, <span class="text-capitalize">{{ request.user.username }}</span></h3>
+                    <form action="" method="post"> <!-- Specify the action if needed, or leave blank to submit to the same URL -->
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-group mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                <!-- Manually add class attribute right here -->
+                                <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}" {% if field.value %}value="{{ field.value|stringformat:'s' }}" {% endif %}>
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <div class="alert alert-danger">{{ error }}</div>
+                                    {% endfor %}
+                                {% endif %}
+
+                            </div>
+                        {% endfor %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} my-3">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-{% endblock body %}
+</div>
+{% endblock %}

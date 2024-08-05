@@ -3,39 +3,40 @@
 {% block title %}Login{% endblock title %}
 {% block body %}
     <div class="container">
-    <div class="row my-3">
-        <div class="col-sm-6 offset-sm-3">
-            <h3>Login</h3>
-            <hr>
-            <form action="{% url 'user_details:login_details' %}" method="post" novalidate class="shadow p-5">
-                {% csrf_token %}
-               {{ form.as_p }}
-            <small>
-             <a href="{% url 'user_details:password_reset' %}">Forgot Password?</a>
-            </small>
-            <br>
-            <input type="submit" class="btn btn-primary mt-4" value="Login">
-            <div class="text-center text-primary fw-bold"><small>New User ? <a href="{% url 'user_details:customerregistration' %}"
-                                                                               class="text-danger">Create an Account</a>
+        <div class="row my-3">
+            <div class="col-sm-6 offset-sm-3">
+                <h3>Login</h3>
+                <hr>
+                <form action="{% url 'user_details:login_details' %}" method="post" novalidate class="shadow p-5">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <small>
+                        <a href="{% url 'user_details:password_reset' %}">Forgot Password?</a>
+                    </small>
+                    <br>
+                    <input type="submit" class="btn btn-primary mt-4" value="Login">
+                    <div class="text-center text-primary fw-bold"><small>New User ? <a
+                            href="{% url 'user_details:customerregistration' %}"
+                            class="text-danger">Create an Account</a>
 
-            </small>
+                    </small>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="alert alert-danger my-3">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} my-3">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                </form>
             </div>
-
-            {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    <p class="alert alert-danger my-3">{{ error }}</p>
-                {% endfor %}
-            {% endif %}
-
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} my-3">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-
-            </form>
         </div>
-    </div>
     </div>
 
 {% endblock %}

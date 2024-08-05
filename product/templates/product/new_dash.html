@@ -1,5 +1,3 @@
-
-
 {% extends 'product/base.html' %}
 {% load static %}
 
@@ -40,34 +38,43 @@
                     <div class="card-body">
                         <h3 class="card-title mb-4">Welcome, <span
                                 class="text-capitalize">{{ request.user.username }}</span></h3>
-
-                        <h2>Coin Transaction History</h2>
-
                         <table style="width: 80%; border-collapse: collapse; margin: 20px 0;">
                             <tr>
-                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                                    Transaction
-                                    Id
+                                <th style="width:40%; padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                                    First Name
                                 </th>
-                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                                    Date
-                                </th>
-                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                                    Quantity
-                                </th>
-                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
-                                    Amount
-                                </th>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.first_name }}</td>
                             </tr>
-                            {% for history in coins_history %}
-                                <tr>
-
-                                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ history.transaction_id }}</td>
-                                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ history.date }}</td>
-                                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ history.quantity }}</td>
-                                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ history.amount }}</td>
-                                </tr>
-                            {% endfor %}
+                            <tr>
+                                <th style=" width:40%; padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                                    Last Name
+                                </th>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.last_name }}</td>
+                            </tr>
+                            <tr>
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                                    Email
+                                </th>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.email }}</td>
+                            </tr>
+                            <tr>
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4; width: 50%;">
+                                    Mobile Number
+                                </th>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.mobile_no }}</td>
+                            </tr>
+                            <tr>
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                                    Address
+                                </th>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.address }}</td>
+                            </tr>
+                            <tr>
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; background-color: #f4f4f4;">
+                                    Available Coins
+                                </th>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: left;">{{ details.coin_balance }}</td>
+                            </tr>
                         </table>
                     </div>
                 </div>

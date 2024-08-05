@@ -18,7 +18,7 @@ from order.models import Order, OrderItem
 from django.db import transaction
 
 
-class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class AuctionCreateView(LoginRequiredMixin, View):
     def get(self, request):
         form = AuctionForm(user=request.user)  # Pass the user to the form
         auctions = Auction.objects.filter(product__user=request.user)  # Filter auctions based on the logged-in user
@@ -33,7 +33,7 @@ class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
-class AuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
+class AuctionUpdateView(LoginRequiredMixin, View):
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction, user=request.user)  # Pass the user to the form
@@ -50,7 +50,7 @@ class AuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesT
         return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
-class AuctionDeleteView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
+class AuctionDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
@@ -108,7 +108,7 @@ def dashboard(request):
     details = Member.objects.filter(username=request.user.username)
     return render(request, 'product/dashboard.html', {'details': details})
 
-
+@login_required
 def products(request):
     products = []
     sort_by = request.GET.get('sort', 'name')
@@ -402,12 +402,17 @@ def support(request):
 
 @login_required
 def dashboard(request, section):
+    print("here = ",section)
     if section == 'home':
         details = Member.objects.get(username=request.user.username)
-        return render(request, 'product/dashboard.html', {'details': details})
+        return render(request, 'product/new_dash.html', {'details': details})
     elif section == 'edit':
         details = Member.objects.get(username=request.user.username)
         return render(request, 'product/editprofile.html', {'details': details})
+    elif section == 'query':
+        user = Member.objects.get(username=request.user.username)
+        queries = Queries.objects.filter(user=user)
+        return render(request, 'product/queries.html', {'queries': queries})
     elif section == 'edit_profile':
         if request.method == 'POST':
             user_profile = Member.objects.get(username=request.user)
