@@ -33,7 +33,9 @@ class AuctionCreateView(LoginRequiredMixin, View):
         return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
-class AuctionUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
+
+class AuctionUpdateView(LoginRequiredMixin, View):
+
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction, user=request.user)  # Pass the user to the form
@@ -108,7 +110,7 @@ def dashboard(request):
     details = Member.objects.filter(username=request.user.username)
     return render(request, 'product/dashboard.html', {'details': details})
 
-
+@login_required
 def products(request):
     products = []
     sort_by = request.GET.get('sort', 'name')
@@ -389,23 +391,30 @@ def support(request):
             description = form.cleaned_data['description']
             member = Member.objects.get(username=request.user)
             ticket_id = random.randint(1000000000, 9999999999)
+            status = 'Active'
             while(Queries.objects.filter(ticket_id=ticket_id).exists()):
                 ticket_id = random.randint(1000000000, 9999999999)
-            query_object = Queries(choices=choices, description=description, user=member, ticket_id=ticket_id)
+            query_object = Queries(choices=choices, description=description, user=member, ticket_id=ticket_id, status=status)
             query_object.save()
-        return redirect('homepage')
+            form = QueryForm()
+        return render(request, 'product/support.html', {'form': form, 'ticket_id': ticket_id})
     else:
         form = QueryForm()
     return render(request, 'product/support.html', {'form': form})
 
 @login_required
 def dashboard(request, section):
+    print("here = ",section)
     if section == 'home':
         details = Member.objects.get(username=request.user.username)
-        return render(request, 'product/dashboard.html', {'details': details})
+        return render(request, 'product/new_dash.html', {'details': details})
     elif section == 'edit':
         details = Member.objects.get(username=request.user.username)
         return render(request, 'product/editprofile.html', {'details': details})
+    elif section == 'query':
+        user = Member.objects.get(username=request.user.username)
+        queries = Queries.objects.filter(user=user)
+        return render(request, 'product/queries.html', {'queries': queries})
     elif section == 'edit_profile':
         if request.method == 'POST':
             user_profile = Member.objects.get(username=request.user)

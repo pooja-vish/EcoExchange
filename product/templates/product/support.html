@@ -2,9 +2,8 @@
 {% load static %}
 {% block body %}
 
-
 <div class="col-lg-4 bg-primary rounded margin-form-left padding-all">
-            <h4 class="elements-left-h4">Have any Query, Raise it here!</h4>
+            <h4 class="elements-left-h4">Have a Query? Raise it with us here!</h4>
             <form class="py-4" method="post" enctype="multipart/form-data" action="{% url 'support' %}">
                 {% csrf_token %}
                 {{ form.as_p }}
@@ -13,6 +12,21 @@
                     </button>
                 </div>
             </form>
+{% if ticket_id %}
+        <div class="modal fade show" id="support" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: block;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Support Ticket</h5>
+                        <button class="close-btn" id="closeFormBtn" onclick="hideTicket()"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>Your support ticket ID: {{ ticket_id }}</h6>
+                    </div>
+                </div>
+            </div>
         </div>
+        {% endif %}
 
+    </div>
 {% endblock %}

@@ -1,4 +1,5 @@
 # views.py
+# views.py
 from django.contrib.auth.models import Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.paginator import Paginator
@@ -36,7 +37,7 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('homepage')  # Redirect to the profile page
+                return redirect('products')  # Redirect to the profile page
             else:
                 messages.warning(request, "Invalid username or password.")
         else:
@@ -97,7 +98,7 @@ class CustomerRegistrationView(View):
             if user is not None:
                 login(request, user)  # Log in the user
                 messages.success(request, 'Your account has been created and you are now logged in!')
-                return redirect('user_details:profile')  # Redirect to the profile page after successful login
+                return render(request,'outer_profile.html')  # Redirect to the profile page after successful login
         else:
             # If form is not valid, render the registration page again with the form and errors
             messages.warning(request, 'Please correct the error below.')
@@ -199,7 +200,8 @@ class ProfileView(View):
             member.save()
 
             messages.success(request, 'Your profile has been updated!')
-            return redirect('homepage')  # Redirect to profile page or any other appropriate page
+            #return redirect('homepage')
+            return redirect('dashboard', section='home')# Redirect to profile page or any other appropriate page
         else:
             messages.warning(request, 'Please correct the error below.')
         return render(request, 'user_details/profile.html', {'form': form})

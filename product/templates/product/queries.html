@@ -1,0 +1,58 @@
+
+
+{% extends 'product/base.html' %}
+{% load static %}
+
+{% block title %}Profile{% endblock title %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-md-3">
+                <div class="list-group">
+                    <a href="{% url 'dashboard' section='home' %}"
+                       class="list-group-item list-group-item-action active">Dashboard</a>
+                    <a href="{% url 'user_details:profile' %}" class="list-group-item list-group-item-action ">Edit
+                        Profile</a>
+                    <a href="{% url 'user_orders' %}" class="list-group-item list-group-item-action ">Your Orders</a>
+                    <a href="{% url 'ordered_products' %}" class="list-group-item list-group-item-action ">Your
+                        Products</a>
+                    <a href="{% url 'dashboard' section='coins' %}" class="list-group-item list-group-item-action ">Coin
+                        History</a>
+                    <a href="{% url 'dashboard' section='query' %}" class="list-group-item list-group-item-action ">Your Raised Queries</a>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'user_details:user_visit_history' %}"
+                           class="list-group-item list-group-item-action">View Visit History</a>
+                    {% endif %}
+                    <a href="{% url 'user_details:password_change' %}" class="list-group-item list-group-item-action">Change
+                        Password</a>
+                    <a href="{% url 'user_details:logout' %}" class="list-group-item list-group-item-action">Logout</a>
+                    </div>
+            </div>
+
+            <!-- Profile Form -->
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Welcome, <span
+                                class="text-capitalize">{{ request.user.username }}</span></h3>
+                        <h3>Your Raised Queries</h3>
+                    <br>
+                        <div class="">
+                            {% for query in queries %}
+                                <div style="border: 1px solid #ced4da ; border-radius: 0.5rem; padding: 1rem;">
+                                    <p style="font-weight: bold">Ticket Tracking ID:{{ query.ticket_id }}</p>
+                                    <p>Ticket Category: {{ query.choices }}</p>
+                                    <p>Ticket Description: {{ query.description }}</p>
+                                    <p>Ticker Status: {{ query.status }}</p>
+                                </div>
+                                <br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
