@@ -118,8 +118,8 @@ def create_payment_intent(request):
 
         # Define prices
         COIN_PRICES = {
-            50: 5,  # 50 coins for $5.00
-            100: 10,  # 100 coins for $10.00
+            50: 500,  # 50 coins for $5.00
+            100: 1000,  # 100 coins for $10.00
         }
 
         if quantity not in COIN_PRICES:
@@ -159,7 +159,7 @@ def update_coins_balance(request):
             user=member,
             transaction_id=transaction_id,
             quantity=quantity,
-            amount=quantity * 5.00  # Assuming $5.00 for 50 coins or $10.00 for 100 coins
+            amount=quantity   # Assuming $5.00 for 50 coins or $10.00 for 100 coins
         )
 
         return JsonResponse({'success': True})
