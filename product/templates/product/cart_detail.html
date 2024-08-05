@@ -65,12 +65,15 @@
             <div class="col-8"></div>
             <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
                 <div class="bg-light rounded">
-
                     <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
                         <h5 class="mb-0 ps-4 me-4">Total</h5>
                         <p class="mb-0" id="total">{{ total_price }} Coins</p>
                     </div>
-                    <a href="{% url 'checkout' %}"><button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button></a>
+                    <a href="{% url 'checkout' %}">
+                        <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" id="checkout-button" type="button">
+        Proceed Checkout
+    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -95,13 +98,34 @@
                 {% endfor %}
             </div>
         </div>
-
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const csrfToken = '{{ csrf_token }}';
+    // Function to update the checkout button state
+    function updateCheckoutButton() {
+        const totalElement = document.getElementById('total');
+        let totalPrice = 0;
+
+        try {
+            // Parse the total price from the text content
+            totalPrice = parseFloat(totalElement.innerText.replace(' Coins', ''));
+            if (isNaN(totalPrice)) {
+                throw new Error('Invalid total price');
+            }
+        } catch (error) {
+            console.error('Error parsing total price:', error);
+        }
+
+        const checkoutButton = document.getElementById('checkout-button');
+        if (totalPrice === 0) {
+            checkoutButton.disabled = true;
+        } else {
+            checkoutButton.disabled = false;
+        }
+    }
+
 
     document.querySelectorAll('button[data-action="increment"], button[data-action="decrement"], button[data-action="delete"]').forEach(button => {
         button.addEventListener('click', function (event) {
@@ -119,15 +143,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 url = '{% url "cart_delete_item" 0 %}'.replace('0', itemId);
             }
 
-            // Log the URL and request details for debugging
-            console.log('Fetching URL:', url);
-            console.log('Request method: POST');
-            console.log('Request headers:', {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest'
-            });
-
             // Send the fetch request
             fetch(url, {
                 method: 'POST',
@@ -137,32 +152,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     'X-Requested-With': 'XMLHttpRequest'
                 },
             })
-            .then(response => {
-                // Log the response details for debugging
-                console.log('Response status:', response.status);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Response data:', data); // Debugging: Log the response data
                 if (data.success) {
-                    if (action === 'delete') {
+                    if (action === 'delete' || data.quantity === 0) {
                         document.getElementById(`item-${itemId}`).remove();
                     } else {
                         document.getElementById(`quantity-${itemId}`).value = data.quantity;
                         document.getElementById(`total-${itemId}`).innerText = `${data.total} Coins`;
                     }
-
                     document.getElementById('total').innerText = `${data.total_price} Coins`;
+                    updateCheckoutButton(data.total_price);
                 } else {
                     alert(data.message);
-                    if (action === 'delete') {
-                        document.getElementById(`item-${itemId}`).remove();
-                    } else {
-                        document.getElementById(`quantity-${itemId}`).value = data.quantity;
-                        document.getElementById(`total-${itemId}`).innerText = `${data.total} Coins`;
-                    }
-
-                    document.getElementById('total').innerText = `${data.total_price} Coins`;
                 }
             })
             .catch(error => {
@@ -171,6 +173,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-
 </script>
 {% endblock %}

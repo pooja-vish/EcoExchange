@@ -158,7 +158,7 @@ def add_to_cart(request, product_id):
         quantity = int(request.POST.get('quantity', 1))
 
         cart_item, created = CartItem.objects.get_or_create(user=member, product=product)
-        if product.quantity - cart_item.quantity > 0:
+        if product.quantity - cart_item.quantity >= 0:
             cart_item.quantity  = quantity
             cart_item.save()
             success = True
@@ -315,8 +315,8 @@ def cart_detail(request):
         total_price = 0
         print("Member not found for the user")
 
-
-    visited_products = request.COOKIES.get('visited_products', '')
+    cookie_name = f'visited_products_{request.user.username}'
+    visited_products = request.COOKIES.get(cookie_name, '')
     visited_products_list = visited_products.split(',') if visited_products else []
     visited_product_objects = Product.objects.filter(product_id__in=visited_products_list)
 
@@ -347,8 +347,10 @@ def product_detail(request, pk):
     cart_item = CartItem.objects.filter(user=member, product=product).first()
     cart_quantity = cart_item.quantity if cart_item else 0
 
+    # Create a custom cookie name using the user's session key or username
+    cookie_name = f'visited_products_{request.user.username}'
 
-    visited_products = request.COOKIES.get('visited_products', '')
+    visited_products = request.COOKIES.get(cookie_name, '')
     visited_products_list = visited_products.split(',') if visited_products else []
 
     if str(pk) not in visited_products_list:
@@ -356,9 +358,7 @@ def product_detail(request, pk):
         if len(visited_products_list) >= 5:
             visited_products_list.pop(0)
 
-
         visited_products_list.append(str(pk))
-
 
     new_visited_products = ','.join(visited_products_list)
 
@@ -368,7 +368,7 @@ def product_detail(request, pk):
         context={'product': product, 'cart_quantity': cart_quantity}
     )
 
-    response.set_cookie('visited_products', new_visited_products)
+    response.set_cookie(cookie_name, new_visited_products)
 
     return response
 
