@@ -18,7 +18,7 @@ from order.models import Order, OrderItem
 from django.db import transaction
 
 
-class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class AuctionCreateView(LoginRequiredMixin, View):
     def get(self, request):
         form = AuctionForm(user=request.user)  # Pass the user to the form
         auctions = Auction.objects.filter(product__user=request.user)  # Filter auctions based on the logged-in user
@@ -33,7 +33,7 @@ class AuctionCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
-class AuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
+class AuctionUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
     def get(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
         form = AuctionForm(instance=auction, user=request.user)  # Pass the user to the form
@@ -50,7 +50,7 @@ class AuctionUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesT
         return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
-class AuctionDeleteView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, View):
+class AuctionDeleteView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
         auction = get_object_or_404(Auction, pk=pk)
@@ -440,50 +440,56 @@ def checkout(request):
         member = None
 
     cart_items = CartItem.objects.filter(user=member)
+
     item_totals = [(item, item.product.price * item.quantity) for item in cart_items]
     total_cost = sum(total for item, total in item_totals)
     success_message = None
     a=member.coin_balance
     if request.method == 'POST':
-        if member.coin_balance >= total_cost:
-            with transaction.atomic():
-                for item in cart_items:
-                    item.product.quantity -= item.quantity
-                    item.product.save()
-                    item.delete()
-                member.coin_balance -= total_cost
-                member.save()
+        if not cart_items.exists():
+            if member.coin_balance >= total_cost:
+                with transaction.atomic():
+                    for item in cart_items:
+                        item.product.quantity -= item.quantity
+                        seller = item.product.user
+                        seller.coin_balance += item.quantity * item.product.price
+                        seller.save()
+                        item.product.save()
+                        item.delete()
+                    member.coin_balance -= total_cost
+                    member.save()
 
-                # Create order
-                order_now=Order.objects.create(
-                    user_id = member,
-                    # order_date = timezone.now
-                    order_amount = total_cost,
-                )
-                for item in cart_items:
-                    OrderItem.objects.create(
-                        order_id=order_now,
-                        product_id = item.product,
-                        quantity = item.quantity
+                    # Create order
+                    order_now=Order.objects.create(
+                        user_id = member,
+                        # order_date = timezone.now
+                        order_amount = total_cost,
                     )
+                    for item in cart_items:
+                        OrderItem.objects.create(
+                            order_id=order_now,
+                            product_id = item.product,
+                            quantity = item.quantity
+                        )
 
 
-    #        # success_message = "Order placed successfully!"
-    #         messages.success(request, 'Order placed successfully!')
-    #         return redirect('checkout')
-    #
-    # return render(request, 'product/checkout.html', {
-    #     'cart_items': item_totals,
-    #     'total_cost': total_cost,
-    #     'success_message': success_message,
-    #     'error_message': 'Insufficient coins to complete the purchase.' if request.method == 'POST' and member.coin_balance < total_cost else None
-    # })
-            messages.success(request, 'Order placed successfully!')
-            return redirect('checkout')
+        #        # success_message = "Order placed successfully!"
+        #         messages.success(request, 'Order placed successfully!')
+        #         return redirect('checkout')
+        #
+        # return render(request, 'product/checkout.html', {
+        #     'cart_items': item_totals,
+        #     'total_cost': total_cost,
+        #     'success_message': success_message,
+        #     'error_message': 'Insufficient coins to complete the purchase.' if request.method == 'POST' and member.coin_balance < total_cost else None
+        # })
+                messages.success(request, 'Order placed successfully!')
+                return redirect('checkout')
 
+            else:
+                messages.error(request, 'Insufficient coins to complete the purchase.')
         else:
-            messages.error(request, 'Insufficient coins to complete the purchase.')
-
+            messages.error(request, 'Empty cart Cannot complete Order')
     return render(request, 'product/checkout.html', {
             'cart_items': item_totals,
             'total_cost': total_cost,
