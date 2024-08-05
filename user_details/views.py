@@ -118,8 +118,8 @@ def create_payment_intent(request):
 
         # Define prices
         COIN_PRICES = {
-            50: 500,  # 50 coins for $5.00
-            100: 1000,  # 100 coins for $10.00
+            50: 5,  # 50 coins for $5.00
+            100: 10,  # 100 coins for $10.00
         }
 
         if quantity not in COIN_PRICES:

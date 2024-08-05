@@ -65,7 +65,7 @@
             <div class="col-8"></div>
             <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
                 <div class="bg-light rounded">
-g
+
                     <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
                         <h5 class="mb-0 ps-4 me-4">Total</h5>
                         <p class="mb-0" id="total">{{ total_price }} Coins</p>
@@ -149,20 +149,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.getElementById(`item-${itemId}`).remove();
                     } else {
                         document.getElementById(`quantity-${itemId}`).value = data.quantity;
-                        document.getElementById(`total-${itemId}`).innerText = `${data.total} $`;
+                        document.getElementById(`total-${itemId}`).innerText = `${data.total} Coins`;
                     }
-                    document.getElementById('subtotal').innerText = `$${data.subtotal}`;
-                    document.getElementById('total').innerText = `$${data.total_price}`;
+
+                    document.getElementById('total').innerText = `${data.total_price} Coins`;
                 } else {
                     alert(data.message);
                     if (action === 'delete') {
                         document.getElementById(`item-${itemId}`).remove();
                     } else {
                         document.getElementById(`quantity-${itemId}`).value = data.quantity;
-                        document.getElementById(`total-${itemId}`).innerText = `${data.total} $`;
+                        document.getElementById(`total-${itemId}`).innerText = `${data.total} Coins`;
                     }
-                    document.getElementById('subtotal').innerText = `$${data.subtotal}`;
-                    document.getElementById('total').innerText = `$${data.total_price}`;
+
+                    document.getElementById('total').innerText = `${data.total_price} Coins`;
                 }
             })
             .catch(error => {

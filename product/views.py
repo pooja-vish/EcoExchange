@@ -455,7 +455,7 @@ def checkout(request):
     success_message = None
     a=member.coin_balance
     if request.method == 'POST':
-        if not cart_items.exists():
+        if cart_items.exists():
             if member.coin_balance >= total_cost:
                 with transaction.atomic():
                     for item in cart_items:
