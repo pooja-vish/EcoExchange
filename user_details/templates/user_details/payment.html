@@ -107,6 +107,7 @@
                     .then(function(data) {
                         if (data.success) {
                             messageElement.textContent = 'Payment successful! Coins added to your balance.';
+                            messageElement.classList.remove('alert-danger')
                             messageElement.classList.add('alert-success');
                             messageElement.classList.remove('d-none');
                         } else {
