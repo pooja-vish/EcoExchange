@@ -13,6 +13,16 @@
                             <i class="fa fa-spinner fa-spin"></i> Save
                         </button>
                     </div>
+                    {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} my-3">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                 {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <p class="alert alert-danger my-3">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
                 </form>
             </div>
         </div>
@@ -20,16 +30,16 @@
             <h2 class="mb-4">List of Auctions</h2>
             <div class="row g-4">
                 {% for auction in auctions %}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="rounded position-relative fruite-item">
+                    <div class="col-md-6 col-lg-6 col-xl-6 fruite-item">
+                        <div class="rounded position-relative div-left-space border border-secondary">
                             <div class="fruite-img image-container">
                                 <img src="{{ auction.product.image.url }}" alt="{{ auction.product.image }}" class="img-fluid w-100 rounded-top">
                             </div>
                             <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">{{ auction.product.category }}</div>
-                            <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                            <div class="p-4">
                                 <h4>{{ auction.product.product_name }}</h4>
                                 <p>{{ auction.product.short_description }}</p>
-                                <p>Quantity: {{ auction.product.quantity }}</p>
+                                <p class="text-dark fs-5 fw-bold mb-0">Quantity: {{ auction.product.quantity }}</p>
                                 <p class="text-dark fs-5 fw-bold mb-0">Coins: {{ auction.product.price }}</p>
                                 <div class="d-flex justify-content-between flex-lg-wrap">
                                     <a href="{% url 'auction_realtime' auction.product.product_id %}" class="btn border border-secondary rounded-pill px-3 text-primary">
@@ -38,7 +48,7 @@
                                     <a href="{% url 'auction_update' auction.id %}" class="btn border border-secondary rounded-pill px-3 text-primary">
                                         <i class="fa fa-eye me-2 text-primary"></i> Update
                                     </a>
-                                    <button class="btn btn-danger border border-secondary rounded-pill px-3 delete-button" data-id="{{ auction.pk }}">
+                                    <button class="btn btn-danger border border-secondary rounded-pill px-3 delete-button button-top" data-id="{{ auction.pk }}">
                                         <i class="fa fa-trash me-2 text-danger"></i> Delete
                                     </button>
                                 </div>

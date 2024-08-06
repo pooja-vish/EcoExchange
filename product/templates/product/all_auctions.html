@@ -6,16 +6,16 @@
             <h2 class="mb-4">List of Auctions</h2>
             <div class="row g-4">
                 {% for auction in auctions %}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="rounded position-relative fruite-item">
+                    <div class="col-md-6 col-lg-6 col-xl-4 fruite-item">
+                        <div class="rounded position-relative div-left-space border border-secondary">
                             <div class="fruite-img image-container">
                                 <img src="{{ auction.product.image.url }}" alt="{{ auction.product.image }}" class="img-fluid w-100 rounded-top">
                             </div>
                             <div class="text-white bg-secondary px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">{{ auction.product.category }}</div>
-                            <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                            <div class="p-4">
                                 <h4>{{ auction.product.product_name }}</h4>
                                 <p>{{ auction.product.product_description }}</p>
-                                <p>Quantity: {{ auction.product.quantity }}</p>
+                                <p class="text-dark fs-5 fw-bold mb-0">Quantity: {{ auction.product.quantity }}</p>
                                 <p class="text-dark fs-5 fw-bold mb-0">Coins: {{ auction.product.price }}</p>
                                 <div class="d-flex justify-content-between flex-lg-wrap">
                                     <a href="{% url 'auction_view' auction.product.product_id %}" class="btn border border-secondary rounded-pill px-3 text-primary">

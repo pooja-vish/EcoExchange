@@ -14,7 +14,7 @@
                     </div>
                     <p><strong>Description:</strong> {{ product.product_description }}</p>
                     <p><strong>Quantity:</strong> {{ product.quantity }}</p>
-                    <p><strong>Price:</strong> ${{ product.price }}</p>
+                    <p><strong>Coins:</strong> {{ product.price }}</p>
                     <p><strong>Category:</strong> {{ product.get_category_display }}</p>
                     <p><strong>Posted by:</strong> <a href="{% url 'user_details:seller_desc' product.user.id %}" type="_blank">{{ product.user.username }}</a></p>
                     <div class="form-group">

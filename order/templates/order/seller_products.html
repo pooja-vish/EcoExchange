@@ -4,14 +4,14 @@
 
 {% block body %}
 <div class="container mt-5">
-    <h1 class="mb-4">Ordered Products</h1>
+    <h1 class="mb-4">Your Listings</h1>
     <ul class="list-group">
         {% for product in products %}
             <li class="list-group-item">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <strong>Product ID:</strong> {{ product.id }}<br>
-                        <strong>Product Name:</strong> {{ product.name }}
+                        <strong>Product ID:</strong> {{ product.product_id }}<br>
+                        <strong>Product Name:</strong> {{ product.product_name }}
                     </div>
                 </div>
                 <ul class="list-group mt-3">
@@ -20,9 +20,8 @@
                             <li class="list-group-item">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>Order ID:</strong> {{ order_item.order_id.id }}<br>
-                                        <strong>Ordered by User ID:</strong> {{ order_item.order_id.user_id.id }}<br>
-                                        <strong>User Name:</strong> {{ order_item.order_id.user_id.username }}
+                                        <strong>Order ID:</strong> {{ order_item.order_id.order_id }}<br>
+                                        <strong>Customer Name:</strong> <a href="{% url 'user_details:seller_desc' order_item.order_id.user_id.id %}" type="_blank">{{ order_item.order_id.user_id.username }} </a>
                                     </div>
                                     <div>
                                              <form method="POST" action="{% url 'update_order_status' order_item.order_id.order_id %}">
