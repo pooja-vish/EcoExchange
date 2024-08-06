@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
-
+from django.utils import timezone
 
 class Member(User):
     address = models.TextField(null=True, blank=True)
@@ -14,7 +14,7 @@ class Member(User):
 class Transaction(models.Model):
     user = models.ForeignKey(Member, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=255, unique=True)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=timezone.now)
     quantity = models.PositiveIntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
