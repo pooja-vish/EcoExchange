@@ -27,10 +27,16 @@ class AuctionCreateView(LoginRequiredMixin, View):
     def post(self, request):
         form = AuctionForm(request.POST, user=request.user)  # Pass the user to the form
         if form.is_valid():
-            form.save()
-            return JsonResponse({'success': True})
+            start_time = form.cleaned_data['start_time']
+            end_time = form.cleaned_data['end_time']
+            if start_time < end_time:
+                form.save()
+                messages.success(request, 'Auction created successfully!')
+                return JsonResponse({'success': True})
         auctions = Auction.objects.filter(product__user=request.user)  # Filter auctions based on the logged-in user
-        return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
+        messages.error(request, 'Start date should be less than End date!')
+        return JsonResponse({'success': True})
+        #return JsonResponse({'success': False, 'errors': form.errors, 'auctions': auctions})
 
 
 

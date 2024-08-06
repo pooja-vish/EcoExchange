@@ -6,7 +6,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 class Member(User):
     address = models.TextField(null=True, blank=True)
     city = models.CharField(max_length=200, null=True, blank=True)
-    mobile_no = PhoneNumberField(unique=True, null=True, blank=True)
+    mobile_no = PhoneNumberField(null=True, blank=True)
     country = models.CharField(max_length=200, null=True, blank=True)
     coin_balance = models.IntegerField(default=0)
 
