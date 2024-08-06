@@ -59,8 +59,9 @@
                                                     <li>
                                                         <div class="d-flex justify-content-between fruite-name"
                                                              style="color: #81c408">
+                                                            {{ product.category }}
                                                             <input type="checkbox" name="categories"
-                                                                   value="{{ product.category }}">{{ product.category }}
+                                                                   value="{{ product.category }}">
                                                         </div>
                                                     </li>
                                                 {% endfor %}

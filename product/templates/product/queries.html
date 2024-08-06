@@ -41,9 +41,10 @@
                     <br>
                         <div class="">
                             {% for query in queries %}
-                                <div style="border: 1px solid #ced4da ; border-radius: 0.5rem; padding: 1rem;">
-                                    <p style="font-weight: bold">Ticket Tracking ID:{{ query.ticket_id }}</p>
+                                <div style="border: 2px solid #81c408; border-radius: 0.5rem; padding: 1rem;">
+                                    <p style="font-weight: bold; color: #81c408">Ticket Tracking ID:{{ query.ticket_id }}</p>
                                     <p>Ticket Category: {{ query.choices }}</p>
+                                    <p>Ticket Requested Date: {{ query.request_date }}</p>
                                     <p>Ticket Description: {{ query.description }}</p>
                                     <p>Ticker Status: {{ query.status }}</p>
                                 </div>
