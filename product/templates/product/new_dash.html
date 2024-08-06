@@ -29,6 +29,11 @@
                           style="display: none;">
                         {% csrf_token %}
                     </form>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} my-3">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
 

@@ -129,21 +129,21 @@ def products(request):
     if sort_by == 'pricedesc':
         sort_by = '-price'
     if sort_by:
-        product_list = Product.objects.all().order_by(sort_by)
+        product_list = Product.objects.filter(quantity__gt=1).order_by(sort_by)
 
     input_range = request.GET.get('rangeInput')
     if input_range:
-        product_list = Product.objects.filter(price__lte=input_range)
+        product_list = Product.objects.filter(price__lte=input_range, quantity__gt=1)
 
     search = request.GET.get('find')
     if search:
-        product_list = Product.objects.filter(product_description__icontains=search)
+        product_list = Product.objects.filter(product_description__icontains=search, quantity__gt=1)
 
     if request.method == 'POST':
         selected_categories = request.POST.getlist('categories')
         print(selected_categories)
         if selected_categories:
-            product_list = Product.objects.filter(category__in=selected_categories)
+            product_list = Product.objects.filter(category__in=selected_categories,quantity__gt=1)
 
     total_products = Product.objects.all().values('category').distinct()
     print(total_products)
