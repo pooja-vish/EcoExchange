@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('total').innerText = `${data.total_price} Coins`;
                 } else {
                     alert(data.message);
+                    document.getElementById(`quantity-${itemId}`).value = data.quantity;
                 }
             })
             .catch(error => {

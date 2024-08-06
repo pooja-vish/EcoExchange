@@ -129,7 +129,7 @@ def products(request):
     if sort_by == 'pricedesc':
         sort_by = '-price'
     if sort_by:
-        product_list = Product.objects.filter(quantity__gt=1).order_by(sort_by)
+        product_list = Product.objects.filter(quantity__gte=1).order_by(sort_by)
 
     input_range = request.GET.get('rangeInput')
     if input_range:

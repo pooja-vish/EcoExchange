@@ -36,7 +36,6 @@ def seller_products(request):
 
 
 @login_required
-@permission_required('order.change_order', raise_exception=True)
 def update_order_status(request, order_id):
     print("hello")
     if request.method == "POST":
