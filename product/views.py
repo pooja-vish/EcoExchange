@@ -10,7 +10,7 @@ from .forms import AuctionForm, EditProfileForm, QueryForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, TemplateView
 
-
+from django.utils import timezone
 from django.views import View
 from django.contrib import messages
 from coins.models import Coins
@@ -73,7 +73,9 @@ class AuctionAllListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        return Auction.objects.exclude(product__user=user)
+        current_time = timezone.now()
+        # Exclude the auctions where the end time has passed and also the user's own products
+        return Auction.objects.exclude(product__user=user).filter(end_time__gt=current_time)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
